@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='architect-functions',
-    version='0.0.1',
+    version='0.1.0',
     packages=['architect'],
     url='https://github.com/arc-repos/arc-functions-python',
     license='Apache 2.0',

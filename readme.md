@@ -62,7 +62,7 @@ Example output:
 - `arc.queues.publish(name, payload)`
 
 ### `arc.tables`
-- `arc.tables.name(name)`
+- `arc.tables.name(tablename)`
 
 ## Testing
 
