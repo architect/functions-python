@@ -64,8 +64,21 @@ Example output:
 ### `arc.tables`
 - `arc.tables.name(tablename)`
 
+---
+
 ## Testing
 
 ```bash
 for i in `ls tests/test_*`; do python3 $i; done
 ```
+
+### Releasing
+
+```bash
+python3 setup.py sdist
+```
+
+```bash
+twine upload dist/*
+```
+
