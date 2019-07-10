@@ -1,3 +1,3 @@
 dist/
 */__pycache__
-*/__init__.pyc
+/arc/__init__.pyc
