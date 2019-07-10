@@ -1,3 +1,4 @@
+MANIFEST
 dist/
 */__pycache__
 /arc/__init__.pyc
