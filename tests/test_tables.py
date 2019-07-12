@@ -18,8 +18,10 @@ class ArcTablesTest(unittest.TestCase):
             warnings.simplefilter('ignore')
 
     def test_tables(self):
-        val = arc.tables.name(tablename='noises')
+        val = arc.tables.name(table='noises')
         print(val)
+        tbl = arc.tables.table(table='noises')
+        print(dir(tbl))
         self.assertTrue(val)
 
 if __name__ == '__main__':
