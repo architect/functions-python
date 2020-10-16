@@ -18,7 +18,7 @@ import json
 import arc
 
 def handler():
-  return {'body': json.dump(arc.reflect())}
+  return {'body': json.dumps(arc.reflect())}
 ```
 
 ### `arc`
