@@ -17,7 +17,7 @@ pip install --target ./vendor architect-functions
 import json
 import arc
 
-def handler():
+def handler(event, context):
   return {'body': json.dumps(arc.reflect())}
 ```
 
