@@ -1,25 +1,21 @@
-# -*- coding: utf-8 -*-
-import unittest
-import os
-import sys
-import types
+# # -*- coding: utf-8 -*-
+from uuid import UUID
 
-# just a hop, skip and a jump away..
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import pytest
 
-import arc.events 
-import helper
+import arc.events
 
-class ArcEventsTest(unittest.TestCase):
 
-    def setUp(self):
-        if not sys.warnoptions:
-            import warnings
-            warnings.simplefilter('ignore')
+@pytest.mark.filterwarnings("ignore:the imp module is deprecated")
+def test_publish(arc_reflection, sns_client):
+    topic_name = "ping"
+    sns_client.create_topic(Name=topic_name)
+    topics = sns_client.list_topics()
 
-    def test_publish(self):
-        val = arc.events.publish(name='ping', payload={'python':True})
-        self.assertTrue(val)
+    arc_reflection(params={f"events/{topic_name}": topics["Topics"][0]["TopicArn"]})
+    val = arc.events.publish(name=topic_name, payload={"python": True})
+    assert isinstance(val, dict)
+    assert "MessageId" in val
 
-if __name__ == '__main__':
-    unittest.main()
+    parsed = UUID(val["MessageId"], version=4)
+    assert isinstance(parsed, UUID)

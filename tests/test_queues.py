@@ -1,25 +1,21 @@
-# -*- coding: utf-8 -*-
-import unittest
-import os
-import sys
-import types
+# # -*- coding: utf-8 -*-
+from uuid import UUID
 
-# just a hop, skip and a jump away..
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import pytest
 
 import arc.queues
-import helper
 
-class ArcQueuesTest(unittest.TestCase):
 
-    def setUp(self):
-        if not sys.warnoptions:
-            import warnings
-            warnings.simplefilter('ignore')
+@pytest.mark.filterwarnings("ignore:the imp module is deprecated")
+def test_queue_publish(arc_reflection, sqs_client):
+    queue_name = "continuum"
+    sqs_client.create_queue(QueueName=queue_name)
+    queues = sqs_client.list_queues()
 
-    def test_queue_publish(self):
-        val = arc.queues.publish(name='continuum', payload={'python':True})
-        self.assertTrue(val)
+    arc_reflection(params={f"queues/{queue_name}": queues["QueueUrls"][0]})
+    val = arc.queues.publish(name=queue_name, payload={"python": True})
+    assert isinstance(val, dict)
+    assert "MessageId" in val
 
-if __name__ == '__main__':
-    unittest.main()
+    parsed = UUID(val["MessageId"], version=4)
+    assert isinstance(parsed, UUID)

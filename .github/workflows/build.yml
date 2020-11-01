@@ -20,6 +20,14 @@ jobs:
       run: |
         pip install pipenv
         pipenv install --dev
-    - name: Test with unittest
+    - name: Test with pytest
       run: |
-        pipenv run python -m unittest discover -s tests
+        pipenv run python -m pytest
+    - name: Coverage with pytest-cov
+      run: |
+        pipenv run python -m pytest --cov=arc --cov-fail-under=51 --cov-report=html:output/coverage --cov-report=term
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report ${{ matrix.os }} ${{ matrix.python-version }}
+        path: output/coverage/
