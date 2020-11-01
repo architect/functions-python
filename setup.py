@@ -8,5 +8,8 @@ setup(
     license='Apache 2.0',
     author='Brian LeRoux',
     author_email='b@brian.io',
-    description='Runtime helpers for Architect provisioned AWS Lambda functions'
+    description='Runtime helpers for Architect provisioned AWS Lambda functions',
+    install_requires=[
+        'boto3'
+    ]
 )
