@@ -31,3 +31,11 @@ jobs:
       with:
         name: code-coverage-report ${{ matrix.os }} ${{ matrix.python-version }}
         path: output/coverage/
+    - name: Build pypi package
+      run: |
+        pipenv run python -m pep517.build --source --binary --out-dir dist/ .
+    - name: Archive pypi package
+      uses: actions/upload-artifact@v2
+      with:
+        name: pypi-packages ${{ matrix.os }} ${{ matrix.python-version }}
+        path: dist/

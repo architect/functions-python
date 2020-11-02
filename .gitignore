@@ -6,3 +6,5 @@ Pipfile.lock
 .pytest_cache/
 .coverage
 output/
+*.egg-info/
+build/

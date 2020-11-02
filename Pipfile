@@ -7,6 +7,7 @@ verify_ssl = true
 moto = {extras = ["dynamodb", "sns", "sqs", "ssm"], version = "*"}
 pytest = "*"
 pytest-cov = "*"
+pep517 = "*"
 
 [packages]
 boto3 = "*"

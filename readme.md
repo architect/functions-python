@@ -85,7 +85,7 @@ pipenv run pytest
 ### Releasing
 
 ```bash
-python3 setup.py sdist
+pipenv run python -m pep517.build --source --binary --out-dir dist/ .
 ```
 
 ```bash
