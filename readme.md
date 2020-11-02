@@ -66,10 +66,20 @@ Example output:
 
 ---
 
+## Development
+
+Install [Pipenv](https://pipenv.pypa.io/en/latest/#install-pipenv-today)
+
+```bash
+pipenv install --dev
+```
+
+---
+
 ## Testing
 
 ```bash
-for i in `ls tests/test_*`; do python3 $i; done
+pipenv run pytest
 ```
 
 ### Releasing
