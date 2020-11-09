@@ -1,4 +1,10 @@
 MANIFEST
 dist/
 */__pycache__
-/arc/__init__.pyc
+**/*.pyc
+Pipfile.lock
+.pytest_cache/
+.coverage
+output/
+*.egg-info/
+build/

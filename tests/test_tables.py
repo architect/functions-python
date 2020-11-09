@@ -1,28 +1,19 @@
-# -*- coding: utf-8 -*-
-import unittest
-import os
-import sys
-import types
-
-# just a hop, skip and a jump away..
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+# # -*- coding: utf-8 -*-
 import arc.tables
-import helper
 
-class ArcTablesTest(unittest.TestCase):
 
-    def setUp(self):
-        if not sys.warnoptions:
-            import warnings
-            warnings.simplefilter('ignore')
+def test_tables(arc_reflection, ddb_client):
+    tablename = "noises"
+    ddb_client.create_table(
+        TableName=tablename,
+        KeySchema=[{"AttributeName": "foo", "KeyType": "HASH"}],
+        AttributeDefinitions=[{"AttributeName": "foo", "AttributeType": "S"}],
+    )
+    tables = ddb_client.list_tables()
+    arc_reflection(params={f"tables/{tablename}": tables["TableNames"][0]})
 
-    def test_tables(self):
-        val = arc.tables.name(table='noises')
-        print(val)
-        tbl = arc.tables.table(table='noises')
-        print(dir(tbl))
-        self.assertTrue(val)
+    val = arc.tables.name(tablename=tablename)
+    assert val == tables["TableNames"][0]
 
-if __name__ == '__main__':
-    unittest.main()
+    tbl = arc.tables.table(tablename=tablename)
+    assert str(tbl.__class__) == "<class 'boto3.resources.factory.dynamodb.Table'>"
