@@ -11,11 +11,15 @@ COOKIE_NAME: str = "_idx"
 
 
 def _get_key() -> str:
-    # 32 bit key size
+    # 16 bit fallback key size
     fallback = b"1234567890123456"
 
     # need to STRONGLY encourage setting ARC_APP_SECRET in the docs
     secret = os.environ.get("ARC_APP_SECRET", fallback)
+
+    # truncate key to 16 bits, this matches what node-webtokens does
+    # https://github.com/teifip/node-webtokens/blob/master/lib/jwe.js#L299
+    secret = secret[16:] if len(secret) > 16 else secret
 
     return jwk.JWK(k=base64url_encode(secret), kty="oct")
 
