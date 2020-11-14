@@ -29,7 +29,6 @@ jobs:
         restore-keys: |
           ${{ matrix.os }}-${{ matrix.python-version }}-pip-
     - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         pip install pipenv
         pipenv install --dev
