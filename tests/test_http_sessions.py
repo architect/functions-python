@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from arc.http import session_read, session_write
-from arc.http.session.jwe import _create_jwe, _parse_jwe
+from arc.http.session.jwe import jwe_write, jwe_read
 
 
 def test_jwe_read_write():
     payload = {"foo": {"bar": 123}, "yak": None}
-    token = _create_jwe(payload)
-    parsed = _parse_jwe(token)
+    token = jwe_write(payload)
+    parsed = jwe_read(token)
     del parsed["iat"]  # delete issued at timestamp
     assert parsed == payload
 
