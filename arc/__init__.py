@@ -1,19 +1,20 @@
 import boto3
 import os
+from typing import Dict
+from collections import defaultdict
 
 
-def reflect():
+def reflect() -> Dict[str, Dict[str, str]]:
     path = "/" + os.environ["ARC_CLOUDFORMATION"]
     ssm = boto3.client("ssm")
     res = ssm.get_parameters_by_path(Path=path, Recursive=True)
-    params = dict((x["Name"], x["Value"]) for x in res["Parameters"])
-    result = {}
-    for key in params:
+    result = defaultdict(dict)
+    for x in res["Parameters"]:
+        key, val = x["Name"], x["Value"]
         bits = key.split("/")
+        if len(bits) < 4:
+            continue
         t = bits[2]
         k = bits[3]
-        val = params[key]
-        if t not in result:
-            result[t] = {}
         result[t][k] = val
-    return result
+    return dict(result)
