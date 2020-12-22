@@ -16,31 +16,31 @@ def aws_credentials():
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def ssm_client(aws_credentials):
     with mock_ssm():
         yield boto3.client("ssm")
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def sqs_client(aws_credentials):
     with mock_sqs():
         yield boto3.client("sqs")
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def sns_client(aws_credentials):
     with mock_sns():
         yield boto3.client("sns")
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def ddb_client(aws_credentials):
     with mock_dynamodb2():
         yield boto3.client("dynamodb")
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def arc_reflection(ssm_client):
     os.environ["ARC_CLOUDFORMATION"] = "TestPythonStaging"
 
