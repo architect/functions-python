@@ -9,6 +9,7 @@ moto = {extras = ["dynamodb", "sns", "sqs", "ssm"], version = "*"}
 pytest = "*"
 pytest-cov = "*"
 pep517 = "*"
+black = "==20.8b1"
 
 [packages]
 jwcrypto = "*"

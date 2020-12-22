@@ -79,4 +79,4 @@ def jwe_write(payload: Dict[Any, Any]) -> str:
     if os.environ.get("NODE_ENV") != "testing":
         jar[COOKIE_NAME]["secure"] = True
 
-    return jar.output(header='')
+    return jar.output(header="")
