@@ -1,6 +1,7 @@
 import os
 from .session.jwe import jwe_read, jwe_write
 
+
 def session_read(req):
     if os.environ.get("SESSION_TABLE_NAME") == "jwe":
         return jwe_read(req)
