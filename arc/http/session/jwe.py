@@ -1,11 +1,12 @@
 import math
 import os
 import time
+import json
 from http import cookies
 from typing import Any, Dict
 
-from jwcrypto import jwe, jwk
-from jwcrypto.common import base64url_encode, json_decode, json_encode
+from jose import jwe
+from jose.utils import base64url_decode
 
 COOKIE_NAME: str = "_idx"
 
@@ -15,26 +16,21 @@ def _get_key() -> str:
     fallback = b"1234567890123456"
 
     # need to STRONGLY encourage setting ARC_APP_SECRET in the docs
-    secret = os.environ.get("ARC_APP_SECRET", fallback)
-
-    return jwk.JWK(k=base64url_encode(secret), kty="oct")
+    return os.environ.get("ARC_APP_SECRET", fallback)
 
 
 def _create_jwe(payload: Dict[Any, Any]) -> str:
     payload = dict(payload)
     payload["iat"] = math.floor(time.time())
-    jwetoken = jwe.JWE(
-        json_encode(payload),
-        json_encode({"alg": "dir", "enc": "A128GCM"}),
-        recipient=_get_key(),
+    encrypted = jwe.encrypt(
+        json.dumps(payload), _get_key(), algorithm="dir", encryption="A128GCM"
     )
-    return jwetoken.serialize(compact=True)
+    return encrypted.decode("utf-8")
 
 
 def _parse_jwe(token: str) -> Dict[Any, Any]:
-    jwetoken = jwe.JWE()
-    jwetoken.deserialize(token, key=_get_key())
-    return json_decode(jwetoken.payload)
+    payload = jwe.decrypt(token, _get_key())
+    return json.loads(payload)
 
 
 def jwe_read(req) -> Dict[Any, Any]:
