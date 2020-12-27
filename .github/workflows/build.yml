@@ -3,7 +3,7 @@ name: Python CI
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -47,11 +47,29 @@ jobs:
       with:
         name: code-coverage-report ${{ matrix.os }} ${{ matrix.python-version }}
         path: output/coverage/
-    - name: Build pypi package
-      run: |
-        pipenv run python -m pep517.build --source --binary --out-dir dist/ .
-    - name: Archive pypi package
-      uses: actions/upload-artifact@v2
+
+  # Build python package
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        name: pypi-packages ${{ matrix.os }} ${{ matrix.python-version }}
-        path: dist/
+        python-version: 3.8
+    - name: Install pypa/build
+      run: >-
+        python -m
+        pip install
+        build
+        --user
+    - name: Build a binary wheel and a source tarball
+      run: >-
+        python -m
+        build
+        --sdist
+        --wheel
+        --outdir dist/
+        .
