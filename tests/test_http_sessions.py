@@ -52,6 +52,7 @@ def test_jwe_read_write(arc_reflection, ddb_client):
         AttributeDefinitions=[
             {"AttributeName": "_idx", "AttributeType": "S"},
         ],
+        BillingMode='PAY_PER_REQUEST',
     )
     tables = ddb_client.list_tables()
     arc_reflection(params={f"tables/{tablename}": tables["TableNames"][0]})
