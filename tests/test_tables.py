@@ -8,7 +8,7 @@ def test_tables(arc_reflection, ddb_client):
         TableName=tablename,
         KeySchema=[{"AttributeName": "foo", "KeyType": "HASH"}],
         AttributeDefinitions=[{"AttributeName": "foo", "AttributeType": "S"}],
-        BillingMode='PAY_PER_REQUEST',
+        BillingMode="PAY_PER_REQUEST",
     )
     tables = ddb_client.list_tables()
     arc_reflection(params={f"tables/{tablename}": tables["TableNames"][0]})
