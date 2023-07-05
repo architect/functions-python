@@ -50,7 +50,7 @@ def arc_reflection(ssm_client):
                 Name=f"/TestPythonStaging/{k}",
                 Description="A test parameter",
                 Value=v,
-                Type='String',
+                Type="String",
             )
 
     return mock_reflect
