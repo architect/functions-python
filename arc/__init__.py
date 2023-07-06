@@ -1,5 +1,7 @@
 import boto3
 import os
+from typing import Dict
+from collections import defaultdict
 
 
 def get_params_recursive(ssm, path, params=[], nextToken=None):
@@ -20,18 +22,17 @@ def get_params_recursive(ssm, path, params=[], nextToken=None):
         return params + result["Parameters"]
 
 
-def reflect():
+def reflect() -> Dict[str, Dict[str, str]]:
     path = "/" + os.environ["ARC_CLOUDFORMATION"]
     ssm = boto3.client("ssm")
     res = get_params_recursive(ssm, path)
-    params = dict((x["Name"], x["Value"]) for x in res)
-    result = {}
-    for key in params:
+    result = defaultdict(dict)
+    for x in res:
+        key, val = x["Name"], x["Value"]
         bits = key.split("/")
+        if len(bits) < 4:
+            continue
         t = bits[2]
         k = bits[3]
-        val = params[key]
-        if t not in result:
-            result[t] = {}
         result[t][k] = val
-    return result
+    return dict(result)

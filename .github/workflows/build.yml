@@ -6,6 +6,10 @@ defaults:
   run:
     shell: bash
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
