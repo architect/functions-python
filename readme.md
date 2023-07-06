@@ -18,12 +18,12 @@ import json
 import arc
 
 def handler(event, context):
-  return {'body': json.dumps(arc.reflect())}
+  return {'body': json.dumps(arc.services())}
 ```
 
 ### `arc`
 
-`arc.reflect` returns a dict of the the current AWS resources.
+`arc.services()` returns a dict of the the current AWS resources.
 
 Example output:
 ```
@@ -91,4 +91,3 @@ pipenv run python -m pep517.build --source --binary --out-dir dist/ .
 ```bash
 twine upload dist/*
 ```
-

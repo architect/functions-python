@@ -3,7 +3,7 @@ import json
 import urllib.request
 import os
 
-from . import reflect
+from . import services
 
 
 def publish(name, payload):
@@ -17,7 +17,7 @@ def publish(name, payload):
             print("arc.queues.publish to sandbox failed: " + str(e))
             return data
     else:
-        arc = reflect()
+        arc = services()
         arn = arc["queues"][name]
         sqs = boto3.client("sqs")
         return sqs.send_message(

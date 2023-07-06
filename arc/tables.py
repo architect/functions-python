@@ -1,7 +1,7 @@
 import os
 import boto3
 
-from . import reflect
+from . import services
 
 
 def name(tablename):
@@ -21,7 +21,7 @@ def name(tablename):
         else:
             return name[0]
     else:
-        arc = reflect()
+        arc = services()
         return arc["tables"][tablename]
 
 

@@ -2,7 +2,7 @@ import boto3
 import os
 
 
-def reflect():
+def services():
     path = "/" + os.environ["ARC_CLOUDFORMATION"]
     ssm = boto3.client("ssm")
     res = ssm.get_parameters_by_path(Path=path, Recursive=True)

@@ -3,7 +3,7 @@ import boto3
 import json
 import urllib.request  # , urllib.parse
 
-from . import reflect
+from . import services
 
 
 def publish(name, payload):
@@ -18,7 +18,7 @@ def publish(name, payload):
             print("arc.events.publish to sandbox failed: " + str(e))
             return data
     else:
-        arc = reflect()
+        arc = services()
         arn = arc["events"][name]
         sns = boto3.client("sns")
         return sns.publish(TopicArn=arn, Message=json.dumps(payload))

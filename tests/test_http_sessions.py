@@ -44,7 +44,7 @@ def test_ddb_sign_unsign_fail():
     assert valid == False
 
 
-def test_jwe_read_write(arc_reflection, ddb_client):
+def test_jwe_read_write(arc_services, ddb_client):
     tablename = "sessions"
     ddb_client.create_table(
         TableName=tablename,
@@ -55,7 +55,7 @@ def test_jwe_read_write(arc_reflection, ddb_client):
         BillingMode="PAY_PER_REQUEST",
     )
     tables = ddb_client.list_tables()
-    arc_reflection(params={f"tables/{tablename}": tables["TableNames"][0]})
+    arc_services(params={f"tables/{tablename}": tables["TableNames"][0]})
 
     payload = {"_idx": "abc", "foo": {"bar": 123}, "yak": None}
     token = ddb_write(payload, tablename)
