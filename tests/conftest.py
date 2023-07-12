@@ -4,7 +4,7 @@ import sys
 
 import boto3
 import pytest
-from moto import mock_dynamodb2, mock_sns, mock_sqs, mock_ssm
+from moto import mock_dynamodb, mock_sns, mock_sqs, mock_ssm
 
 
 @pytest.fixture(scope="module")
@@ -36,20 +36,21 @@ def sns_client(aws_credentials):
 
 @pytest.fixture()
 def ddb_client(aws_credentials):
-    with mock_dynamodb2():
+    with mock_dynamodb():
         yield boto3.client("dynamodb")
 
 
 @pytest.fixture
-def arc_reflection(ssm_client):
+def arc_services(ssm_client):
     os.environ["ARC_CLOUDFORMATION"] = "TestPythonStaging"
 
-    def mock_reflect(params):
+    def mock_services(params):
         for k, v in params.items():
             ssm_client.put_parameter(
                 Name=f"/TestPythonStaging/{k}",
                 Description="A test parameter",
                 Value=v,
+                Type="String",
             )
 
-    return mock_reflect
+    return mock_services

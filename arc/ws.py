@@ -1,7 +1,7 @@
 import boto3
 import json
 
-from . import reflect
+from . import services
 
 
 def send(id, payload):
@@ -15,7 +15,7 @@ def send(id, payload):
             print("arc.ws.send to sandbox failed: " + str(e))
             return data
     else:
-        arc = reflect()
+        arc = services()
         https = arc["ws"]["https"]
         api = boto3.client("apigatewaymanagementapi", endpoint_url=https)
         return api.post_to_connection(Data=json.dumps(payload), ConnectionId=id)
