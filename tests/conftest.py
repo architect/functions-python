@@ -42,12 +42,12 @@ def ddb_client(aws_credentials):
 
 @pytest.fixture
 def arc_services(ssm_client):
-    os.environ["ARC_CLOUDFORMATION"] = "TestPythonStaging"
+    os.environ["ARC_STACK_NAME"] = "ArcAppTesting"
 
     def mock_services(params):
         for k, v in params.items():
             ssm_client.put_parameter(
-                Name=f"/TestPythonStaging/{k}",
+                Name=f"/ArcAppTesting/{k}",
                 Description="A test parameter",
                 Value=v,
                 Type="String",
