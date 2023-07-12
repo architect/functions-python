@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import jwcrypto
+import pytest
+
 from arc.http import session_read, session_write
 from arc.http.session.jwe import jwe_write, jwe_read
 from arc.http.session.ddb import ddb_write, ddb_read
@@ -26,6 +29,32 @@ def test_jwe_session(monkeypatch):
     assert "count" in session
     assert session["count"] == 0
 
+
+def test_custom_key(monkeypatch):
+    monkeypatch.setenv("ARC_APP_SECRET", "abcdefghijklmnop")
+    test_jwe_cookies(monkeypatch)
+    test_jwe_read_write()
+
+
+def test_long_key(monkeypatch):
+    monkeypatch.setenv("ARC_APP_SECRET", "12345678901234567890123456789012")
+    test_jwe_cookies(monkeypatch)
+    test_jwe_read_write()
+
+
+def test_short_key(monkeypatch):
+    monkeypatch.setenv("ARC_APP_SECRET", "123456")
+    with pytest.raises(
+        jwcrypto.common.InvalidCEKeyLength,
+        match=r"Expected key of length 128 bits, got 48",
+    ):
+        test_jwe_cookies(monkeypatch)
+
+    with pytest.raises(
+        jwcrypto.common.InvalidCEKeyLength,
+        match=r"Expected key of length 128 bits, got 48",
+    ):
+        test_jwe_read_write()
 
 def test_ddb_sign_unsign():
     original = "123456"
