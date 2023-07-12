@@ -24,7 +24,6 @@ def test_jwe_session(monkeypatch):
             "cookie": cookie,
         },
     }
-
     session = session_read(mock)
     assert "count" in session
     assert session["count"] == 0
@@ -32,13 +31,13 @@ def test_jwe_session(monkeypatch):
 
 def test_custom_key(monkeypatch):
     monkeypatch.setenv("ARC_APP_SECRET", "abcdefghijklmnop")
-    test_jwe_cookies(monkeypatch)
+    test_jwe_session(monkeypatch)
     test_jwe_read_write()
 
 
 def test_long_key(monkeypatch):
     monkeypatch.setenv("ARC_APP_SECRET", "12345678901234567890123456789012")
-    test_jwe_cookies(monkeypatch)
+    test_jwe_session(monkeypatch)
     test_jwe_read_write()
 
 
@@ -48,13 +47,13 @@ def test_short_key(monkeypatch):
         jwcrypto.common.InvalidCEKeyLength,
         match=r"Expected key of length 128 bits, got 48",
     ):
-        test_jwe_cookies(monkeypatch)
-
+        test_jwe_session(monkeypatch)
     with pytest.raises(
         jwcrypto.common.InvalidCEKeyLength,
         match=r"Expected key of length 128 bits, got 48",
     ):
         test_jwe_read_write()
+
 
 def test_ddb_sign_unsign():
     original = "123456"
@@ -73,7 +72,7 @@ def test_ddb_sign_unsign_fail():
     assert valid == False
 
 
-def test_jwe_read_write(arc_services, ddb_client):
+def test_ddb_read_write(arc_services, ddb_client):
     tablename = "sessions"
     ddb_client.create_table(
         TableName=tablename,
