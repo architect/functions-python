@@ -1,7 +1,39 @@
+import json
 import os
 import re
+import arc
 
 non_local_envs = ["staging", "production"]
+
+
+def get_ports():
+    sandbox = os.environ.get("ARC_SANDBOX")
+    not_found = TypeError("Sandbox internal port not found")
+    # Sandbox env var is the happy path for Lambda runs
+    if sandbox:
+        sandbox_config = json.loads(sandbox)
+        if not sandbox_config["ports"]:
+            raise not_found
+        return sandbox_config["ports"]
+    # Fall back to an internal SSM query in case Functions is running as a bare module
+    else:
+        services = arc.services()
+        if not services["ARC_SANDBOX"] or not services["ARC_SANDBOX"]["ports"]:
+            raise not_found
+        ports = json.loads(services["ARC_SANDBOX"]["ports"])
+        return ports
+
+
+def to_logical_id(string):
+    string = re.sub(r"([A-Z])", r" \1", string)
+    if len(string) == 1:
+        return string.upper()
+    string = re.sub(r"^[\W_]+|[\W_]+$", "", string).lower()
+    string = string[0].upper() + string[1:]
+    string = re.sub(r"[\W_]+(\w|$)", lambda m: m.group(1).upper(), string)
+    if string == "Get":
+        return "GetIndex"
+    return string
 
 
 def use_aws():
@@ -19,15 +51,3 @@ def use_aws():
 
     # Assumed to be AWS
     return True
-
-
-def to_logical_id(string):
-    string = re.sub(r"([A-Z])", r" \1", string)
-    if len(string) == 1:
-        return string.upper()
-    string = re.sub(r"^[\W_]+|[\W_]+$", "", string).lower()
-    string = string[0].upper() + string[1:]
-    string = re.sub(r"[\W_]+(\w|$)", lambda m: m.group(1).upper(), string)
-    if string == "Get":
-        return "GetIndex"
-    return string

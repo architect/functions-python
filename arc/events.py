@@ -1,24 +1,59 @@
-import os
 import json
-import urllib.request  # , urllib.parse
+import urllib.request
 import boto3
 
 from . import services
+from .lib.utils import use_aws, get_ports
+
+port = None
+cache = {}
+
+
+def parse(event):
+    messages = list(
+        map((lambda record: json.loads(record["Sns"]["Message"])), event["Records"])
+    )
+    if len(messages) == 1:
+        return messages[0]
+    return messages
 
 
 def publish(name, payload):
-    if os.environ.get("NODE_ENV") == "testing":
+    global port
+    local = not use_aws()
+
+    def publish_sandbox(name, payload):
         try:
             dump = json.dumps({"name": name, "payload": payload})
             data = bytes(dump.encode())
-            # data = bytes(urllib.parse.urlencode(dump).encode())
-            handler = urllib.request.urlopen("http://localhost:3334/events", data)
+            handler = urllib.request.urlopen(f"http://localhost:{port}/events", data)
             return handler.read().decode("utf-8")
-        except Exception as e:
-            print("arc.events.publish to sandbox failed: " + str(e))
+        except Exception as error:
+            print("arc.events.publish to Sandbox failed: " + str(error))
             return data
-    else:
-        arc = services()
-        arn = arc["events"][name]
-        sns = boto3.client("sns")
-        return sns.publish(TopicArn=arn, Message=json.dumps(payload))
+
+    def publish_aws(name, payload):
+        global cache
+
+        def pub(arn):
+            sns = boto3.client("sns")
+            return sns.publish(TopicArn=arn, Message=json.dumps(payload))
+
+        if hasattr(cache, name):
+            return pub(cache[name])
+        service_map = services()
+        cache = service_map["events"]
+        arn = cache[name]
+        if not arn:
+            raise TypeError(f"{name} event not found")
+        return pub(arn)
+
+    if local and port:
+        return publish_sandbox(name, payload)
+    if local:
+        ports = get_ports()
+        if not ports["events"]:
+            raise TypeError("Sandbox events port not found")
+        port = ports["events"]
+        return publish_sandbox(name, payload)
+    return publish_aws(name, payload)

@@ -1,7 +1,7 @@
-import boto3
+import os
 import json
 import urllib.request
-import os
+import boto3
 
 from . import services
 
