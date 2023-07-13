@@ -27,17 +27,16 @@ def services():
         port = 2222
         if sandbox:
             sandbox_config = json.loads(sandbox)
-
             if not sandbox_config["ports"]["_arc"]:
                 raise TypeError("Sandbox internal port not found")
-
             port = sandbox_config["ports"]["_arc"]
-            session = boto3.session.Session()
-            ssm = session.client(
-                service_name="ssm",
-                endpoint_url=f"http://localhost:{port}/_arc/ssm",
-                region_name=region_name,
-            )
+
+        session = boto3.session.Session()
+        ssm = session.client(
+            service_name="ssm",
+            endpoint_url=f"http://localhost:{port}/_arc/ssm",
+            region_name=region_name,
+        )
     elif region:
         ssm = boto3.client("ssm", region_name=region)
     else:
