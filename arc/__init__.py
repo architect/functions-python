@@ -45,8 +45,6 @@ def services():
             endpoint_url=f"http://localhost:{port}/_arc/ssm",
             region_name=region_name,
         )
-    elif region:
-        ssm = boto3.client("ssm", region_name=region)
     else:
         ssm = boto3.client("ssm")
 

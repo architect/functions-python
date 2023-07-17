@@ -1,7 +1,10 @@
 import os
 import boto3
-
 from . import services
+from .lib.utils import use_aws, get_ports
+
+port = None
+cache = {}
 
 
 def name(tablename):
@@ -10,19 +13,18 @@ def name(tablename):
     Keyword arguments:
     tablename -- the name defined in app.arc
     """
-    if os.environ.get("NODE_ENV") == "testing":
-        db = boto3.client("dynamodb", endpoint_url="http://localhost:5000")
-        res = db.list_tables()["TableNames"]
-        tidy = [tbl for tbl in res if tbl != "arc-sessions"]
-        stage = [tbl for tbl in tidy if "production" not in tbl]
-        name = [tbl for tbl in stage if tablename in tbl]
-        if len(name) == 0:
-            raise NameError('tablename "' + tablename + '" not found')
-        else:
-            return name[0]
-    else:
-        arc = services()
-        return arc["tables"][tablename]
+    global cache
+
+    if cache.get(tablename):
+        return cache[tablename]
+
+    service_map = services()
+    if service_map.get("tables"):
+        cache = service_map["tables"]
+
+    if not cache.get(tablename):
+        raise NameError('tablename "' + tablename + '" not found')
+    return cache[tablename]
 
 
 def table(tablename):
@@ -33,9 +35,21 @@ def table(tablename):
 
     Ref: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb.html#table
     """
-    if os.environ.get("NODE_ENV") == "testing":
-        db = boto3.resource("dynamodb", endpoint_url="http://localhost:5000")
-        return db.Table(name(tablename))
+    global port
+    local = not use_aws()
+
+    if local:
+        if not port:
+            ports = get_ports()
+            if not ports.get("tables"):
+                raise TypeError("Sandbox tables port not found")
+            port = ports["tables"]
+        region = os.environ.get("AWS_REGION")
+        region_name = region or "us-west-2"
+        db = boto3.resource(
+            "dynamodb", endpoint_url=f"http://localhost:{port}", region_name=region_name
+        )
     else:
         db = boto3.resource("dynamodb")
-        return db.Table(name(tablename))
+
+    return db.Table(name(tablename))
