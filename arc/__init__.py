@@ -35,7 +35,7 @@ def services():
         port = 2222
         if sandbox:
             sandbox_config = json.loads(sandbox)
-            if not sandbox_config["ports"]["_arc"]:
+            if not sandbox_config["ports"].get("_arc"):
                 raise TypeError("Sandbox internal port not found")
             port = sandbox_config["ports"]["_arc"]
 

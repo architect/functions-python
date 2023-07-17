@@ -12,13 +12,13 @@ def get_ports():
     # Sandbox env var is the happy path for Lambda runs
     if sandbox:
         sandbox_config = json.loads(sandbox)
-        if not sandbox_config["ports"]:
+        if not sandbox_config.get("ports"):
             raise not_found
         return sandbox_config["ports"]
     # Fall back to an internal SSM query in case Functions is running as a bare module
     else:
         services = arc.services()
-        if not services["ARC_SANDBOX"] or not services["ARC_SANDBOX"]["ports"]:
+        if not services.get("ARC_SANDBOX", {}).get("ports"):
             raise not_found
         ports = json.loads(services["ARC_SANDBOX"]["ports"])
         return ports

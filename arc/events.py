@@ -39,7 +39,7 @@ def publish(name, payload):
             sns = boto3.client("sns")
             return sns.publish(TopicArn=arn, Message=json.dumps(payload))
 
-        if hasattr(cache, name):
+        if cache.get(name):
             return pub(cache[name])
         service_map = services()
         cache = service_map["events"]
@@ -52,7 +52,7 @@ def publish(name, payload):
         return publish_sandbox(name, payload)
     if local:
         ports = get_ports()
-        if not ports["events"]:
+        if not ports.get("events"):
             raise TypeError("Sandbox events port not found")
         port = ports["events"]
         return publish_sandbox(name, payload)

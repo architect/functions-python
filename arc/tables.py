@@ -51,5 +51,4 @@ def table(tablename):
         )
     else:
         db = boto3.resource("dynamodb")
-
     return db.Table(name(tablename))

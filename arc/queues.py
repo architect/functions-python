@@ -39,7 +39,7 @@ def publish(name, payload):
                 QueueUrl=arn, MessageBody=json.dumps(payload), DelaySeconds=0
             )
 
-        if hasattr(cache, name):
+        if cache.get(name):
             return pub(cache[name])
         service_map = services()
         cache = service_map["queues"]
@@ -52,7 +52,7 @@ def publish(name, payload):
         return publish_sandbox(name, payload)
     if local:
         ports = get_ports()
-        if not ports["events"]:
+        if not ports.get("events"):
             raise TypeError("Sandbox queues port not found")
         port = ports["events"]
         return publish_sandbox(name, payload)
