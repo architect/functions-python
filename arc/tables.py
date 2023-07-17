@@ -8,7 +8,7 @@ def name(tablename):
     """Get generated DynamoDB table name.
 
     Keyword arguments:
-    tablename -- the name defined in .arc
+    tablename -- the name defined in app.arc
     """
     if os.environ.get("NODE_ENV") == "testing":
         db = boto3.client("dynamodb", endpoint_url="http://localhost:5000")

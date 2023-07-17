@@ -14,6 +14,7 @@ def aws_credentials():
     os.environ["AWS_SECURITY_TOKEN"] = "testing"
     os.environ["AWS_SESSION_TOKEN"] = "testing"
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+    os.environ["_TESTING"] = "True"
 
 
 @pytest.fixture()

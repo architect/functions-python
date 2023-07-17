@@ -3,8 +3,16 @@ import json
 import boto3
 from .lib.utils import use_aws, to_logical_id
 
+service_cache = {}
+
 
 def services():
+    global service_cache
+
+    testing = os.environ.get("_TESTING")
+    if service_cache and not testing:
+        return service_cache
+
     app = os.environ.get("ARC_APP_NAME")
     env = os.environ.get("ARC_ENV")
     sandbox = os.environ.get("ARC_SANDBOX")
@@ -59,4 +67,5 @@ def services():
         if t not in result:
             result[t] = {}
         result[t][k] = val
-    return result
+    service_cache = result
+    return service_cache
