@@ -4,7 +4,8 @@ from . import services
 from .lib.utils import use_aws, get_ports
 
 port = None
-cache = {}
+tablename_cache = {}
+db_client_cache = {}
 
 
 def name(tablename):
@@ -13,18 +14,18 @@ def name(tablename):
     Keyword arguments:
     tablename -- the name defined in app.arc
     """
-    global cache
+    global tablename_cache
 
-    if cache.get(tablename):
-        return cache[tablename]
+    if tablename_cache.get(tablename):
+        return tablename_cache[tablename]
 
     service_map = services()
     if service_map.get("tables"):
-        cache = service_map["tables"]
+        tablename_cache = service_map["tables"]
 
-    if not cache.get(tablename):
+    if not tablename_cache.get(tablename):
         raise NameError('tablename "' + tablename + '" not found')
-    return cache[tablename]
+    return tablename_cache[tablename]
 
 
 def table(tablename):
@@ -35,6 +36,10 @@ def table(tablename):
 
     Ref: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb.html#table
     """
+
+    if db_client_cache.get(tablename):
+        return db_client_cache[tablename]
+
     global port
     local = not use_aws()
 
@@ -51,4 +56,5 @@ def table(tablename):
         )
     else:
         db = boto3.resource("dynamodb")
-    return db.Table(name(tablename))
+    db_client_cache[tablename] = db.Table(name(tablename))
+    return db_client_cache[tablename]
