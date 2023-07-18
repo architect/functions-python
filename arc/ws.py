@@ -23,8 +23,7 @@ def instantiate_api():
                 port = ports["_arc"]
             endpoint_url = f"http://localhost:{port}/_arc/ws"
             print("endpoint_url", endpoint_url)
-            region = os.environ.get("AWS_REGION")
-            region_name = region or "us-west-2"
+            region_name = os.environ.get("AWS_REGION", "us-west-2")
             _api = boto3.client(
                 "apigatewaymanagementapi",
                 endpoint_url=endpoint_url,

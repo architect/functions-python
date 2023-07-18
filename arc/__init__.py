@@ -17,7 +17,7 @@ def services():
     env = os.environ.get("ARC_ENV")
     sandbox = os.environ.get("ARC_SANDBOX")
     stack = os.environ.get("ARC_STACK_NAME")
-    region = os.environ.get("AWS_REGION")
+    region_name = os.environ.get("AWS_REGION", "us-west-2")
 
     local = not use_aws()
 
@@ -29,7 +29,6 @@ def services():
 
     app_name = stack or to_logical_id(f"{app}-{env}")
     path = f"/{app_name}"
-    region_name = region or "us-west-2"
 
     if local:
         port = 2222

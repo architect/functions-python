@@ -49,8 +49,7 @@ def table(tablename):
             if not ports.get("tables"):
                 raise TypeError("Sandbox tables port not found")
             port = ports["tables"]
-        region = os.environ.get("AWS_REGION")
-        region_name = region or "us-west-2"
+        region_name = os.environ.get("AWS_REGION", "us-west-2")
         db = boto3.resource(
             "dynamodb", endpoint_url=f"http://localhost:{port}", region_name=region_name
         )

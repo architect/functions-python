@@ -17,7 +17,7 @@ def test_jwe_read_write():
 
 
 def test_jwe_session(monkeypatch):
-    monkeypatch.setenv("SESSION_TABLE_NAME", "jwe")
+    monkeypatch.setenv("ARC_SESSION_TABLE_NAME", "jwe")
     cookie = session_write({"count": 0})
     mock = {
         "headers": {
@@ -30,13 +30,13 @@ def test_jwe_session(monkeypatch):
 
 
 def test_custom_key(monkeypatch):
-    monkeypatch.setenv("ARC_APP_SECRET", "abcdefghijklmnop")
+    monkeypatch.setenv("ARC_APP_SECRET", "abcdefghijklmnopqrstuvwxyz012345")
     test_jwe_session(monkeypatch)
     test_jwe_read_write()
 
 
 def test_long_key(monkeypatch):
-    monkeypatch.setenv("ARC_APP_SECRET", "12345678901234567890123456789012")
+    monkeypatch.setenv("ARC_APP_SECRET", "abcdefghijklmnopqrstuvwxyz012345abc")
     test_jwe_session(monkeypatch)
     test_jwe_read_write()
 
@@ -45,12 +45,12 @@ def test_short_key(monkeypatch):
     monkeypatch.setenv("ARC_APP_SECRET", "123456")
     with pytest.raises(
         jwcrypto.common.InvalidCEKeyLength,
-        match=r"Expected key of length 128 bits, got 48",
+        match=r"Expected key of length 256 bits, got 48",
     ):
         test_jwe_session(monkeypatch)
     with pytest.raises(
         jwcrypto.common.InvalidCEKeyLength,
-        match=r"Expected key of length 128 bits, got 48",
+        match=r"Expected key of length 256 bits, got 48",
     ):
         test_jwe_read_write()
 

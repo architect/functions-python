@@ -6,33 +6,51 @@ from typing import Any, Dict
 from jwcrypto import jwe, jwk
 from jwcrypto.common import base64url_encode, json_decode, json_encode
 
+algos = {
+    # 256 bit (32 octet) key size
+    "A256GCM": "12345678901234567890123456789012",
+    # 192 bit (24 octet) key size
+    "A192GCM": "123456789012345678901234",
+    # 128 bit (16 octet) key size
+    "A128GCM": "1234567890123456",
+}
+enc = None
+key = None
 
-def _get_key() -> str:
-    # 16 bit fallback key size
-    fallback = b"1234567890123456"
 
-    # need to STRONGLY encourage setting ARC_APP_SECRET in the docs
-    secret = os.environ.get("ARC_APP_SECRET", fallback)
+def setup_crypto():
+    global enc
+    global key
+    enc = os.environ.get("ARC_APP_SECRET_ALGO", "A256GCM")
+    if not algos.get(enc):
+        err = f"Invalid token algorithm, must be one of: {', '.join(algos.keys())}"
+        raise NameError(err)
 
-    # truncate key to 16 bits, this matches what node-webtokens does
+    # Strongly encourage setting ARC_APP_SECRET, fall back to something dumb and compatible
+    secret = os.environ.get("ARC_APP_SECRET", algos[enc])
+
+    # Truncate key if necessary, this matches what node-webtokens does
     # https://github.com/teifip/node-webtokens/blob/master/lib/jwe.js#L299
-    secret = secret[16:] if len(secret) > 16 else secret
+    if len(secret) > len(algos[enc]):
+        secret = secret[0 : len(algos[enc])]
 
-    return jwk.JWK(k=base64url_encode(secret), kty="oct")
+    key = jwk.JWK(k=base64url_encode(secret), kty="oct")
 
 
 def jwe_read(cookie: str) -> Dict[Any, Any]:
+    setup_crypto()
     jwetoken = jwe.JWE()
-    jwetoken.deserialize(cookie, key=_get_key())
+    jwetoken.deserialize(cookie, key=key)
     return json_decode(jwetoken.payload)
 
 
 def jwe_write(payload: Dict[Any, Any]) -> str:
+    setup_crypto()
     payload = dict(payload)
     payload["iat"] = math.floor(time.time())
     jwetoken = jwe.JWE(
         json_encode(payload),
-        json_encode({"alg": "dir", "enc": "A128GCM"}),
-        recipient=_get_key(),
+        json_encode({"alg": "dir", "enc": enc}),
+        recipient=key,
     )
     return jwetoken.serialize(compact=True)

@@ -1,5 +1,6 @@
 import os
 import time
+import platform
 from http import cookies
 from typing import Optional
 
@@ -10,17 +11,18 @@ def _read_cookie(req, cookie_name: str) -> Optional[str]:
         raw_cookie = ";".join(req.get("cookies"))
     else:
         headers = req.get("headers", {})
-        # TODO: uppercase 'Cookie' is not the header name on AWS Lambda; it's
-        # lowercase 'cookie' on lambda...
-        raw_cookie = headers.get("Cookie", headers.get("cookie", ""))
+        raw_cookie = headers.get("cookie", headers.get("Cookie", ""))
 
     jar = cookies.SimpleCookie(raw_cookie)
     cookie = jar.get(cookie_name)
-    return None if cookie is None else cookie.value
+    if cookie:
+        return cookie.value
+    return None
 
 
 def _write_cookie(payload: str, cookie_name: str) -> str:
-    max_age = int(os.environ.get("SESSION_TTL", 7.884e8))
+    ttl = os.environ.get("ARC_SESSION_TTL", os.environ.get("SESSION_TTL", 7.884e8))
+    max_age = int(ttl)
 
     jar = cookies.SimpleCookie()
     jar[cookie_name] = payload
@@ -29,10 +31,16 @@ def _write_cookie(payload: str, cookie_name: str) -> str:
     jar[cookie_name]["httponly"] = True
     jar[cookie_name]["path"] = "/"
 
-    if "SESSION_DOMAIN" in os.environ:
-        jar[cookie_name]["domain"] = os.environ.get("SESSION_DOMAIN")
+    # Python 3.7 and below apparently doesn't support samesite
+    ver = platform.python_version_tuple()
+    if int(ver[1]) > 7:
+        jar[cookie_name]["samesite"] = "lax"
 
-    if os.environ.get("NODE_ENV") != "testing":
+    domain = os.environ.get("ARC_SESSION_DOMAIN", os.environ.get("SESSION_DOMAIN"))
+    if domain:
+        jar[cookie_name]["domain"] = domain
+
+    if os.environ.get("ARC_ENV") != "testing":
         jar[cookie_name]["secure"] = True
 
     return jar.output(header="")

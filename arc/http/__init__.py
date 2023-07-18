@@ -4,21 +4,35 @@ from .session.jwe import jwe_read, jwe_write
 from .session.ddb import ddb_read, ddb_write
 
 COOKIE_NAME: str = "_idx"
-DEFAULT_SESSION_TABLE: str = "arc-sessions"
+
+
+def get_table_name():
+    table_name = os.environ.get(
+        "ARC_SESSION_TABLE_NAME", os.environ.get("SESSION_TABLE_NAME")
+    )
+    if not table_name:
+        raise TypeError(
+            "To use sessions, ensure the table name is specified in the ARC_SESSION_TABLE_NAME env vars"
+        )
+    return table_name
 
 
 def session_read(req):
-    table_name = os.environ.get("SESSION_TABLE_NAME", DEFAULT_SESSION_TABLE)
+    table_name = get_table_name()
     try:
         cookie = _read_cookie(req, COOKIE_NAME)
-        return jwe_read(cookie) if table_name == "jwe" else ddb_read(cookie, table_name)
+        if table_name == "jwe":
+            return jwe_read(cookie)
+        else:
+            return ddb_read(cookie, table_name)
     except:
         return {}
 
 
 def session_write(payload):
-    table_name = os.environ.get("SESSION_TABLE_NAME", DEFAULT_SESSION_TABLE)
-    cookie = (
-        jwe_write(payload) if table_name == "jwe" else ddb_write(payload, table_name)
-    )
+    table_name = get_table_name()
+    if table_name == "jwe":
+        cookie = jwe_write(payload)
+    else:
+        cookie = ddb_write(payload, table_name)
     return _write_cookie(cookie, COOKIE_NAME)
