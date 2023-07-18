@@ -18,7 +18,7 @@ enc = None
 key = None
 
 
-def setup_crypto():
+def _setup_crypto():
     global enc
     global key
     enc = os.environ.get("ARC_APP_SECRET_ALGO", "A256GCM")
@@ -38,14 +38,14 @@ def setup_crypto():
 
 
 def jwe_read(cookie: str) -> Dict[Any, Any]:
-    setup_crypto()
+    _setup_crypto()
     jwetoken = jwe.JWE()
     jwetoken.deserialize(cookie, key=key)
     return json_decode(jwetoken.payload)
 
 
 def jwe_write(payload: Dict[Any, Any]) -> str:
-    setup_crypto()
+    _setup_crypto()
     payload = dict(payload)
     payload["iat"] = math.floor(time.time())
     jwetoken = jwe.JWE(

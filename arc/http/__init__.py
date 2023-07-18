@@ -6,7 +6,7 @@ from .session.ddb import ddb_read, ddb_write
 COOKIE_NAME: str = "_idx"
 
 
-def get_table_name():
+def _get_table_name():
     table_name = os.environ.get(
         "ARC_SESSION_TABLE_NAME", os.environ.get("SESSION_TABLE_NAME")
     )
@@ -18,7 +18,7 @@ def get_table_name():
 
 
 def session_read(req):
-    table_name = get_table_name()
+    table_name = _get_table_name()
     try:
         cookie = _read_cookie(req, COOKIE_NAME)
         if table_name == "jwe":
@@ -30,7 +30,7 @@ def session_read(req):
 
 
 def session_write(payload):
-    table_name = get_table_name()
+    table_name = _get_table_name()
     if table_name == "jwe":
         cookie = jwe_write(payload)
     else:
