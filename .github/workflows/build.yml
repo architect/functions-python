@@ -54,20 +54,10 @@ jobs:
       run: |
         pipenv run black --check .
 
-    # TODO check `pipenv run pytest`
     - name: Test with pytest
       run: |
         pipenv run python -m pytest --cov=arc --cov-report=term
-
-    # - name: Coverage with pytest-cov
-    #   run: |
-    #     pipenv run python -m pytest --cov=arc --cov-fail-under=51 --cov-report=html:output/coverage --cov-report=term
-
-    # - name: Archive code coverage results
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: code-coverage-report ${{ matrix.os }} ${{ matrix.python-version }}
-    #     path: output/coverage/
+  #     pipenv run python -m pytest --cov=arc --cov-fail-under=51 --cov-report=html:output/coverage --cov-report=term
 
   # Build python package
   # build:
