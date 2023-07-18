@@ -35,6 +35,11 @@ def instantiate_api():
             _api = boto3.client("apigatewaymanagementapi", endpoint_url=endpoint_url)
 
 
+def api():
+    instantiate_api()
+    return _api
+
+
 def send(id, payload):
     instantiate_api()
     return _api.post_to_connection(Data=json.dumps(payload), ConnectionId=id)
