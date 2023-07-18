@@ -1,4 +1,5 @@
 import os
+from .helpers.parse_body import _parse_body
 from .session.cookies import _write_cookie, _read_cookie
 from .session.jwe import jwe_read, jwe_write
 from .session.ddb import ddb_read, ddb_write
@@ -36,3 +37,7 @@ def session_write(payload):
     else:
         cookie = ddb_write(payload, table_name)
     return _write_cookie(cookie, COOKIE_NAME)
+
+
+def parse_body(req):
+    return _parse_body(req)
