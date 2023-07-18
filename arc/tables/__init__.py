@@ -1,7 +1,7 @@
 import os
 import boto3
-from arc import services
-from arc.lib import use_aws, get_ports
+from arc.services import _services
+from arc._lib import use_aws, get_ports
 
 port = None
 tablename_cache = {}
@@ -19,7 +19,7 @@ def name(tablename):
     if tablename_cache.get(tablename):
         return tablename_cache[tablename]
 
-    service_map = services()
+    service_map = _services()
     if service_map.get("tables"):
         tablename_cache = service_map["tables"]
 

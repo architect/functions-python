@@ -2,9 +2,7 @@
 import json
 from uuid import UUID
 
-import pytest
-
-import arc.queues
+import arc
 
 
 def test_parse():

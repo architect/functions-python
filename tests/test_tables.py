@@ -1,5 +1,5 @@
 # # -*- coding: utf-8 -*-
-import arc.tables
+import arc
 
 
 def test_tables(arc_services, ddb_client):

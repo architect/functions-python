@@ -23,13 +23,13 @@ pip install --target ./vendor architect-functions
 ## Usage
 
 ```py
-import arc
-arc.events    # @events pub/sub
-arc.http      # @http tools
-arc.queues    # @queues pub/sub
-arc.services  # Architect resource / service discovery
-arc.tables    # @tables DynamoDB helper methods + API client
-arc.ws        # @ws WebSocket helper + API client
+import arc          # Import all tools, or...
+import arc.events   # @events pub/sub
+import arc.http     # @http tools
+import arc.queues   # @queues pub/sub
+import arc.services # Architect resource / service discovery
+import arc.tables   # @tables DynamoDB helper methods + API client
+import arc.ws       # @ws WebSocket helper + API client
 ```
 
 
