@@ -3,7 +3,7 @@ import re
 import json
 import boto3
 
-from .lib.utils import use_aws, get_ports
+from arc.lib import use_aws, get_ports
 
 port = None
 _api = None

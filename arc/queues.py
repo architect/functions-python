@@ -2,8 +2,8 @@ import json
 import urllib.request
 import boto3
 
-from . import services
-from .lib.utils import use_aws, get_ports
+from arc import services
+from arc.lib import use_aws, get_ports
 
 port = None
 cache = {}

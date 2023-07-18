@@ -1,7 +1,7 @@
 import os
 import json
 import boto3
-from .lib.utils import use_aws, to_logical_id
+from arc.lib import use_aws, to_logical_id
 
 service_map_cache = {}
 
