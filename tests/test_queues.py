@@ -7,7 +7,6 @@ import pytest
 import arc.queues
 
 
-@pytest.mark.filterwarnings("ignore:the imp module is deprecated")
 def test_parse():
     data = {"ok": True}
     message = {"Records": [{"body": json.dumps(data)}]}

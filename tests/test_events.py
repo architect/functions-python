@@ -7,7 +7,6 @@ import pytest
 import arc.events
 
 
-@pytest.mark.filterwarnings("ignore:the imp module is deprecated")
 def test_parse():
     data = {"ok": True}
     message = {"Records": [{"Sns": {"Message": json.dumps(data)}}]}
