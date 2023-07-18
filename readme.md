@@ -1,6 +1,16 @@
-# architect-functions-python
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/architect/assets.arc.codes/raw/main/public/architect-logo-light-500b%402x.png">
+  <img alt="Architect Logo" src="https://github.com/architect/assets.arc.codes/raw/main/public/architect-logo-500b%402x.png">
+</picture>
 
-Python runtime support for Architect provisioned AWS Lambda functions
+## [`architect-functions`](https://pypi.org/project/architect-functions/)
+
+> Runtime helper library for serverless apps built with [Architect](https://arc.codes)
+
+[![GitHub CI status](https://github.com/architect/functions-python/actions/workflows/build.yml/badge.svg)](https://github.com/architect/functions-python/actions/workflows/build.yml)
+
+
+Check out the full docs: [arc.codes](https://arc.codes/docs/en/reference/runtime-helpers/python)
 
 
 ## Install
@@ -10,59 +20,47 @@ cd path/to/lambda
 pip install --target ./vendor architect-functions
 ```
 
+## Usage
+
+```py
+import arc
+arc.events    # @events pub/sub
+arc.http      # @http tools
+arc.queues    # @queues pub/sub
+arc.services  # Architect resource / service discovery
+arc.tables    # @tables DynamoDB helper methods + API client
+arc.ws        # @ws WebSocket helper + API client
+```
+
+
 ## API
 
-```python
-# example lambda function
-import json
-import arc
+**`@events` methods**
+- [`arc.events.parse()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.events.parse)
+- [`arc.events.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.events.publish)
 
-def handler(event, context):
-  return {'body': json.dumps(arc.services())}
-```
+**`@http` methods**
+- [`arc.http.parse_body()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.parse_body)
+- [`arc.http.res_fmt()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.res_fmt)
+- [`arc.http.session_read()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.session_read)
+- [`arc.http.session_write()`](https://arc.codes/docs/en/reference/runtime-helpersarc.http.session_write/python#)
 
-### `arc`
+**`@queues` methods**
+- [`arc.queues.parse()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.queues.parse)
+- [`arc.queues.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.queues.publish)
 
-`arc.services()` returns a dict of the the current AWS resources.
+**Service discovery**
+- [`arc.services()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.services)
 
-Example output:
-```
-{
-  "events": {
-    "ping": "arn:aws:sns:us-east-1:555:TestStaging-PingTopic-11111111111",
-  },
-  "queues": {
-    "continuum": "https://sqs.us-east-1.amazonaws.com/555/TestStaging-ContinuumQueue-8888888888"
-  },
-  "static": {
-    "bucket": "teststaging-staticbucket-11111111",
-    "fingerprint": "false"
-  },
-  "tables": {
-    "noises": "TestStaging-NoisesTable-111111111"
-  },
-  "ws": {
-    "https": "https://xxx.execute-api.us-east-1.amazonaws.com/production/@connections",
-    "wss": "wss://xxx.execute-api.us-east-1.amazonaws.com/production"
-  }
-}
-```
+**`@tables` methods**
+- [`arc.tables.name()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.tables.name)
+- [`arc.tables.table()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.tables.table)
 
-### `arc.http`
-- `arc.http.session_read()`
-- `arc.http.session_write()`
-
-### `arc.ws`
-- `arc.ws.send(id, payload)`
-
-### `arc.events`
-- `arc.events.publish(name, payload)`
-
-### `arc.queues`
-- `arc.queues.publish(name, payload)`
-
-### `arc.tables`
-- `arc.tables.name(tablename)`
+**`@ws` methods**
+- [`arc.ws.api()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.api)
+- [`arc.ws.close()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.close)
+- [`arc.ws.info()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.info)
+- [`arc.ws.send()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.send)
 
 ---
 
@@ -81,6 +79,7 @@ pipenv install --dev
 ```bash
 pipenv run pytest
 ```
+
 
 ### Releasing
 
