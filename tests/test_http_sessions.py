@@ -54,6 +54,31 @@ def test_short_key(monkeypatch):
         test_jwe_read_write()
 
 
+def test_ddb_session(monkeypatch, arc_services, ddb_client):
+    tablename = "sessions"
+    monkeypatch.setenv("ARC_SESSION_TABLE_NAME", tablename)
+    ddb_client.create_table(
+        TableName=tablename,
+        KeySchema=[{"AttributeName": "_idx", "KeyType": "HASH"}],
+        AttributeDefinitions=[
+            {"AttributeName": "_idx", "AttributeType": "S"},
+        ],
+        BillingMode="PAY_PER_REQUEST",
+    )
+    tables = ddb_client.list_tables()
+    arc_services(params={f"tables/{tablename}": tables["TableNames"][0]})
+    payload = {"_idx": "abc", "count": 0}
+    cookie = arc.http.session_write(payload)
+    mock = {
+        "headers": {
+            "cookie": cookie,
+        },
+    }
+    session = arc.http.session_read(mock)
+    assert "count" in session
+    assert session["count"] == 0
+
+
 def test_ddb_sign_unsign():
     original = "123456"
     secret = "1234567890"
