@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import jwcrypto
 import pytest
-
-from arc.http import session_read, session_write
+import arc
 from arc.http.session.jwe import jwe_write, jwe_read
 from arc.http.session.ddb import ddb_write, ddb_read
 from arc.http.session.ddb import _sign, _unsign
@@ -18,13 +17,13 @@ def test_jwe_read_write():
 
 def test_jwe_session(monkeypatch):
     monkeypatch.setenv("ARC_SESSION_TABLE_NAME", "jwe")
-    cookie = session_write({"count": 0})
+    cookie = arc.http.session_write({"count": 0})
     mock = {
         "headers": {
             "cookie": cookie,
         },
     }
-    session = session_read(mock)
+    session = arc.http.session_read(mock)
     assert "count" in session
     assert session["count"] == 0
 

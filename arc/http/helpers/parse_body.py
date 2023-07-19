@@ -4,7 +4,7 @@ import json
 from urllib.parse import parse_qsl
 
 
-def _parse_body(req):
+def parse_body(req):
     ctype = req["headers"].get("content-type", req["headers"].get("Content-Type"))
     body = req.get("body")
     # We aren't going to support <Arc 6 bodies, which are always empty dicts

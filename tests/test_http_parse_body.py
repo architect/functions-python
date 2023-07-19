@@ -2,8 +2,7 @@
 import base64
 import json
 import pytest
-
-from arc.http import parse_body
+import arc
 
 
 def b64encode(string):
@@ -37,7 +36,7 @@ xml_app = {"content-type": "application/xml"}
 # Architect v10+ requests
 def test_plain_text():
     mock = {"body": hi_text, "headers": text, "isBase64Encoded": False}
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi_text
 
 
@@ -47,7 +46,7 @@ def test_plain_text_b64():
         "headers": text,
         "isBase64Encoded": True,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi_text
 
 
@@ -57,7 +56,7 @@ def test_xml():
         "headers": xml_text,
         "isBase64Encoded": False,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi_xml
 
 
@@ -67,7 +66,7 @@ def test_xml_app():
         "headers": xml_app,
         "isBase64Encoded": False,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi_xml
 
 
@@ -77,7 +76,7 @@ def test_xml_b64():
         "headers": xml_text,
         "isBase64Encoded": True,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi_xml
 
 
@@ -87,7 +86,7 @@ def test_xml_app_b64():
         "headers": xml_app,
         "isBase64Encoded": True,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi_xml
 
 
@@ -101,7 +100,7 @@ def test_raw_json():
         "headers": json_encoded,
         "isBase64Encoded": False,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi
 
 
@@ -111,7 +110,7 @@ def test_empty_body():
         "body": None,
         "headers": json_encoded,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body is None
 
 
@@ -121,7 +120,7 @@ def test_json_b64():
         "headers": json_encoded,
         "isBase64Encoded": True,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi
 
 
@@ -131,7 +130,7 @@ def test_json_api_b64():
         "headers": {"content-type": "application/vnd.api+json"},
         "isBase64Encoded": True,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi
 
 
@@ -146,7 +145,7 @@ def test_raw_json_fails():
         ValueError,
         match=r"Invalid request body encoding or invalid JSON",
     ):
-        parse_body(mock)
+        arc.http.parse_body(mock)
 
 
 def test_invalid_json_fails():
@@ -159,7 +158,7 @@ def test_invalid_json_fails():
         ValueError,
         match=r"Invalid request body encoding or invalid JSON",
     ):
-        parse_body(mock)
+        arc.http.parse_body(mock)
 
 
 def test_form_url_b64():
@@ -168,7 +167,7 @@ def test_form_url_b64():
         "headers": form_url_encoded,
         "isBase64Encoded": True,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi
 
 
@@ -178,7 +177,7 @@ def test_multipart_b64():
         "headers": multi_part_form_data,
         "isBase64Encoded": True,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == {"base64": hi_base64_file}
 
 
@@ -188,7 +187,7 @@ def test_octet_b64():
         "headers": octet_stream,
         "isBase64Encoded": True,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == {"base64": hi_base64_file}
 
 
@@ -198,7 +197,7 @@ def test_empty_body_v5():
         "body": {},
         "headers": json_encoded,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == {}
 
 
@@ -207,7 +206,7 @@ def test_parsed_json_body():
         "body": hi,
         "headers": json_encoded,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi
 
 
@@ -216,7 +215,7 @@ def test_parsed_form_url_encoded_body():
         "body": hi,
         "headers": form_url_encoded,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi
 
 
@@ -225,5 +224,5 @@ def test_parsed_octet_stream_body():
         "body": hi,
         "headers": octet_stream,
     }
-    body = parse_body(mock)
+    body = arc.http.parse_body(mock)
     assert body == hi

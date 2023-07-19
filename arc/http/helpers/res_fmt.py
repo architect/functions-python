@@ -2,10 +2,11 @@ import json
 import gzip
 from base64 import b64encode
 
+from arc.http.session import session_write
 from .binary_types import binary_types
 
 
-def _res_fmt(req, params):
+def res(req, params):
     def res_is(t):
         return isinstance(params, t)
 
@@ -219,5 +220,9 @@ def _res_fmt(req, params):
         body = compress(bytes(res["body"], "utf-8"))
         res["body"] = b64enc(body)
         res["isBase64Encoded"] = True
+
+    # Save the passed session
+    if params.get("session"):
+        res["headers"]["set-cookie"] = session_write(params["session"])
 
     return res
