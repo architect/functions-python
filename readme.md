@@ -41,7 +41,7 @@ import arc.ws       # @ws WebSocket helper + API client
 
 **`@http` methods**
 - [`arc.http.parse_body()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.parse_body)
-- [`arc.http.res_fmt()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.res_fmt)
+- [`arc.http.res()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.res)
 - [`arc.http.session_read()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.session_read)
 - [`arc.http.session_write()`](https://arc.codes/docs/en/reference/runtime-helpersarc.http.session_write/python#)
 
