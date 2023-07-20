@@ -1,6 +1,6 @@
-import json
 import gzip
 from base64 import b64encode
+import simplejson as _json
 
 from arc.http.session import session_write
 from .binary_types import binary_types
@@ -55,7 +55,7 @@ def res(req, params):
             or res_is((int, float, complex))
             or (res_is(str) and len(params))
         ):
-            params = {"body": json.dumps(params)}
+            params = {"body": _json.dumps(params)}
 
         # Not returning is actually valid now lolnothingmatters
         elif params is None:
@@ -118,7 +118,7 @@ def res(req, params):
         body = params["text"]
     elif params.get("json"):
         content_type = "application/json; charset=utf8"
-        body = json.dumps(params["json"])
+        body = _json.dumps(params["json"])
     elif params.get("xml"):
         content_type = "application/xml; charset=utf8"
         body = params["xml"]

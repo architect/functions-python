@@ -1,4 +1,5 @@
 import os
+import simplejson as _json
 from datetime import datetime, timedelta
 from base64 import b64encode, urlsafe_b64encode
 from typing import Any, Dict, Tuple, Optional
@@ -51,8 +52,10 @@ def ddb_read(cookie: Optional[str], table_name: str) -> Dict[Any, Any]:
         db.put_item(Item=session)
         return session
 
-    session = db.get_item(Key={"_idx": cookie}, ConsistentRead=True)
-    return session.get("Item", {})
+    result = db.get_item(Key={"_idx": cookie}, ConsistentRead=True)
+    item = result.get("Item", {})
+    session = _json.loads(_json.dumps(item))
+    return session
 
 
 def ddb_write(payload: Dict[Any, Any], table_name: str) -> str:

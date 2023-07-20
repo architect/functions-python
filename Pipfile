@@ -13,3 +13,4 @@ black = "*"
 
 [packages]
 jwcrypto = "*"
+simplejson = "*"
