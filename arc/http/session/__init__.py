@@ -4,7 +4,6 @@ from .cookies import _write_cookie, _read_cookie
 from .jwe import jwe_read, jwe_write
 from .ddb import ddb_read, ddb_write
 
-COOKIE_NAME: str = "_idx"
 session_table = None
 
 
@@ -41,7 +40,7 @@ def session_read(req):
         == "jwe"
     )
     try:
-        cookie = _read_cookie(req, COOKIE_NAME)
+        cookie = _read_cookie(req)
         if is_jwe:
             return jwe_read(cookie)
         else:
@@ -61,4 +60,4 @@ def session_write(payload):
     else:
         _get_session_table()
         cookie = ddb_write(payload, session_table)
-    return _write_cookie(cookie, COOKIE_NAME)
+    return _write_cookie(cookie)
