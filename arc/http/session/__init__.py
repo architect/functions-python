@@ -25,9 +25,12 @@ def _get_session_table():
     service_map = _services()
     tables = service_map.get("tables", {})
     # Tables services: key would be logical table name, value would be physical
-    session_table = tables.get(table_name)
-    if not session_table and table_name in tables.values():
+    # Providing a physical table name is more legacy Node.js @architect/functions behavior, whereas this client requires the logical name
+    # Still, we want to interop, so denormalize to make it happen
+    if tables.get(table_name):
         session_table = table_name
+    if not session_table and table_name in tables.values():
+        session_table = list(filter(lambda i: tables[i] == table_name, tables))[0]
     if not session_table:
         raise TypeError(f"Session table name '{table_name}' could not be found")
 
