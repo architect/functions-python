@@ -1,6 +1,27 @@
+[project]
+name = "architect-functions"
+version = "0.2.0"
+description = "Runtime utility library for Functional Web Apps (FWAs) built with Architect (https://arc.codes)"
+readme = "readme.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Database",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development"
+]
+
+[project.urls]
+homepage = "https://arc.codes"
+documentation = "https://arc.codes/docs/en/reference/runtime-helpers/python"
+repository = "https://github.com/architect/functions-python/"
+changelog = "https://github.com/architect/functions-python/blob/main/readme.md"
+
 [build-system]
-requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4"]
+requires = ["setuptools>=68", "wheel", "setuptools_scm[toml]>=7.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-
