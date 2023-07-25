@@ -3,8 +3,6 @@ import os
 import re
 import arc
 
-non_local_envs = ["staging", "production"]
-
 
 def get_ports():
     sandbox = os.environ.get("ARC_SANDBOX")
@@ -40,6 +38,7 @@ def use_aws():
     env = os.environ.get("ARC_ENV")
     is_local = os.environ.get("ARC_LOCAL")
     in_sandbox = os.environ.get("ARC_SANDBOX")
+    non_local_envs = ["staging", "production"]
 
     # Testing is always local
     if env == "testing":

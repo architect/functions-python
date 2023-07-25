@@ -62,7 +62,7 @@ jobs:
     - name: Test with pytest
       run: |
         pipenv run python -m pytest --cov=arc --cov-report=term
-  #     pipenv run python -m pytest --cov=arc --cov-fail-under=51 --cov-report=html:output/coverage --cov-report=term
+      # --cov-fail-under=51 --cov-report=html:output/coverage
 
     - name: Notify
       uses: sarisia/actions-status-discord@v1

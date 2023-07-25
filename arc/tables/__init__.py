@@ -3,9 +3,10 @@ import boto3
 from arc.services import _services
 from arc._lib import use_aws, get_ports
 
-port = None
-tablename_cache = {}
-db_client_cache = {}
+_port = None
+_tables_cache = {}
+_dynamo_client_cache = None  # The boto3 DynamoDB client
+_dynamo_clients_cache = {}  # Instantiated Dynamo table resources
 
 
 def name(tablename):
@@ -14,18 +15,18 @@ def name(tablename):
     Keyword arguments:
     tablename -- the name defined in app.arc
     """
-    global tablename_cache
+    global _tables_cache
 
-    if tablename_cache.get(tablename):
-        return tablename_cache[tablename]
+    if _tables_cache.get(tablename):
+        return _tables_cache[tablename]
 
     service_map = _services()
     if service_map.get("tables"):
-        tablename_cache = service_map["tables"]
+        _tables_cache = service_map["tables"]
 
-    if not tablename_cache.get(tablename):
+    if not _tables_cache.get(tablename):
         raise NameError('tablename "' + tablename + '" not found')
-    return tablename_cache[tablename]
+    return _tables_cache[tablename]
 
 
 def table(tablename):
@@ -37,23 +38,32 @@ def table(tablename):
     Ref: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb.html#table
     """
 
-    if db_client_cache.get(tablename):
-        return db_client_cache[tablename]
+    global _dynamo_client_cache
+    global _dynamo_clients_cache
 
-    global port
+    if _dynamo_clients_cache.get(tablename):
+        return _dynamo_clients_cache[tablename]
+
     local = not use_aws()
 
     if local:
-        if not port:
+        global _port
+
+        if not _port:
             ports = get_ports()
             if not ports.get("tables"):
                 raise TypeError("Sandbox tables port not found")
-            port = ports["tables"]
+            _port = ports["tables"]
         region_name = os.environ.get("AWS_REGION", "us-west-2")
-        db = boto3.resource(
-            "dynamodb", endpoint_url=f"http://localhost:{port}", region_name=region_name
-        )
+        if not _dynamo_client_cache:
+            _dynamo_client_cache = boto3.resource(
+                "dynamodb",
+                endpoint_url=f"http://localhost:{_port}",
+                region_name=region_name,
+            )
     else:
-        db = boto3.resource("dynamodb")
-    db_client_cache[tablename] = db.Table(name(tablename))
-    return db_client_cache[tablename]
+        if not _dynamo_client_cache:
+            _dynamo_client_cache = boto3.resource("dynamodb")
+
+    _dynamo_clients_cache[tablename] = _dynamo_client_cache.Table(name(tablename))
+    return _dynamo_clients_cache[tablename]

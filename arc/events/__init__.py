@@ -4,8 +4,9 @@ import boto3
 from arc.services import _services
 from arc._lib import use_aws, get_ports
 
-port = None
-cache = {}
+_port = None
+_events_cache = {}
+_sns_client_cache = None
 
 
 def parse(event):
@@ -18,7 +19,6 @@ def parse(event):
 
 
 def publish(name, payload):
-    global port
     local = not use_aws()
 
     def publish_sandbox(name, payload):
@@ -32,27 +32,33 @@ def publish(name, payload):
             return data
 
     def publish_aws(name, payload):
-        global cache
+        global _events_cache
+        global _sns_client_cache
+
+        if not _sns_client_cache:
+            _sns_client_cache = boto3.client("sns")
 
         def pub(arn):
-            sns = boto3.client("sns")
-            return sns.publish(TopicArn=arn, Message=json.dumps(payload))
+            return _sns_client_cache.publish(TopicArn=arn, Message=json.dumps(payload))
 
-        if cache.get(name):
-            return pub(cache[name])
+        if _events_cache.get(name):
+            return pub(_events_cache[name])
         service_map = _services()
-        cache = service_map["events"]
-        arn = cache[name]
+        _events_cache = service_map["events"]
+        arn = _events_cache[name]
         if not arn:
             raise TypeError(f"{name} event not found")
         return pub(arn)
 
-    if local and port:
-        return publish_sandbox(name, payload)
     if local:
+        global _port
+
+        if _port:
+            return publish_sandbox(name, payload)
+
         ports = get_ports()
         if not ports.get("events"):
             raise TypeError("Sandbox events port not found")
-        port = ports["events"]
+        _port = ports["events"]
         return publish_sandbox(name, payload)
     return publish_aws(name, payload)

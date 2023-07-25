@@ -3,15 +3,17 @@ import json
 import boto3
 from arc._lib import use_aws, to_logical_id
 
-service_map_cache = {}
+_service_map_cache = {}
+_ssm_client_cache = None
 
 
 def _services():
-    global service_map_cache
+    global _service_map_cache
+    global _ssm_client_cache
 
     testing = os.environ.get("_TESTING")
-    if service_map_cache and not testing:
-        return service_map_cache
+    if _service_map_cache and not testing:
+        return _service_map_cache
 
     app = os.environ.get("ARC_APP_NAME")
     env = os.environ.get("ARC_ENV")
@@ -38,16 +40,18 @@ def _services():
                 raise TypeError("Sandbox internal port not found")
             port = sandbox_config["ports"]["_arc"]
 
-        session = boto3.session.Session()
-        ssm = session.client(
-            service_name="ssm",
-            endpoint_url=f"http://localhost:{port}/_arc/ssm",
-            region_name=region_name,
-        )
+        if not _ssm_client_cache:
+            session = boto3.session.Session()
+            _ssm_client_cache = session.client(
+                service_name="ssm",
+                endpoint_url=f"http://localhost:{port}/_arc/ssm",
+                region_name=region_name,
+            )
     else:
-        ssm = boto3.client("ssm")
+        if not _ssm_client_cache:
+            _ssm_client_cache = boto3.client("ssm")
 
-    paginator = ssm.get_paginator("get_parameters_by_path")
+    paginator = _ssm_client_cache.get_paginator("get_parameters_by_path")
     response_iterator = paginator.paginate(Path=path, Recursive=True)
     parameters = []
     for page in response_iterator:
@@ -64,5 +68,5 @@ def _services():
         if t not in result:
             result[t] = {}
         result[t][k] = val
-    service_map_cache = result
-    return service_map_cache
+    _service_map_cache = result
+    return _service_map_cache

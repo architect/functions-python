@@ -4,15 +4,15 @@ from .cookies import _write_cookie, _read_cookie
 from .jwe import jwe_read, jwe_write
 from .ddb import ddb_read, ddb_write
 
-session_table = None
+_session_table_cache = None
 
 
 def _get_session_table():
-    global session_table
+    global _session_table_cache
 
     testing = os.environ.get("_TESTING")
-    if session_table and not testing:
-        return session_table
+    if _session_table_cache and not testing:
+        return _session_table_cache
 
     table_name = os.environ.get(
         "ARC_SESSION_TABLE_NAME", os.environ.get("SESSION_TABLE_NAME")
@@ -27,10 +27,12 @@ def _get_session_table():
     # Providing a physical table name is more legacy Node.js @architect/functions behavior, whereas this client requires the logical name
     # Still, we want to interop, so denormalize to make it happen
     if tables.get(table_name):
-        session_table = table_name
-    if not session_table and table_name in tables.values():
-        session_table = list(filter(lambda i: tables[i] == table_name, tables))[0]
-    if not session_table:
+        _session_table_cache = table_name
+    if not _session_table_cache and table_name in tables.values():
+        _session_table_cache = list(filter(lambda i: tables[i] == table_name, tables))[
+            0
+        ]
+    if not _session_table_cache:
         raise TypeError(f"Session table name '{table_name}' could not be found")
 
 
@@ -45,7 +47,7 @@ def session_read(req):
             return jwe_read(cookie)
         else:
             _get_session_table()
-            return ddb_read(cookie, session_table)
+            return ddb_read(cookie, _session_table_cache)
     except:
         return {}
 
@@ -59,5 +61,5 @@ def session_write(payload):
         cookie = jwe_write(payload)
     else:
         _get_session_table()
-        cookie = ddb_write(payload, session_table)
+        cookie = ddb_write(payload, _session_table_cache)
     return _write_cookie(cookie)

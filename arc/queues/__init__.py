@@ -4,8 +4,9 @@ import boto3
 from arc.services import _services
 from arc._lib import use_aws, get_ports
 
-port = None
-cache = {}
+_port = None
+_queues_cache = {}
+_sqs_client_cache = None
 
 
 def parse(event):
@@ -16,43 +17,48 @@ def parse(event):
 
 
 def publish(name, payload):
-    global port
     local = not use_aws()
 
     def publish_sandbox(name, payload):
         try:
             dump = json.dumps({"name": name, "payload": payload})
             data = bytes(dump.encode())
-            handler = urllib.request.urlopen(f"http://localhost:{port}/queues", data)
+            handler = urllib.request.urlopen(f"http://localhost:{_port}/queues", data)
             return handler.read().decode("utf-8")
         except Exception as error:
             print("arc.queues.publish to Sandbox failed: " + str(error))
             return data
 
     def publish_aws(name, payload):
-        global cache
+        global _queues_cache
+        global _sqs_client_cache
+
+        if not _sqs_client_cache:
+            _sqs_client_cache = boto3.client("sqs")
 
         def pub(arn):
-            sqs = boto3.client("sqs")
-            return sqs.send_message(
+            return _sqs_client_cache.send_message(
                 QueueUrl=arn, MessageBody=json.dumps(payload), DelaySeconds=0
             )
 
-        if cache.get(name):
-            return pub(cache[name])
+        if _queues_cache.get(name):
+            return pub(_queues_cache[name])
         service_map = _services()
-        cache = service_map["queues"]
-        arn = cache[name]
+        _queues_cache = service_map["queues"]
+        arn = _queues_cache[name]
         if not arn:
             raise TypeError(f"{name} event not found")
         return pub(arn)
 
-    if local and port:
-        return publish_sandbox(name, payload)
     if local:
+        global _port
+
+        if _port:
+            return publish_sandbox(name, payload)
+
         ports = get_ports()
         if not ports.get("events"):
             raise TypeError("Sandbox queues port not found")
-        port = ports["events"]
+        _port = ports["events"]
         return publish_sandbox(name, payload)
     return publish_aws(name, payload)
