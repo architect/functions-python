@@ -4,23 +4,23 @@ import json
 import boto3
 from arc._lib import use_aws, get_ports
 
-port = None
 _api = None
+_port = None
 
 
 def instantiate_api():
-    global port
     global _api
+    global _port
     local = not use_aws()
 
     if not _api:
         if local:
-            if not port:
+            if not _port:
                 ports = get_ports()
                 if not ports.get("_arc"):
                     raise TypeError("Sandbox internal port not found")
-                port = ports["_arc"]
-            endpoint_url = f"http://localhost:{port}/_arc/ws"
+                _port = ports["_arc"]
+            endpoint_url = f"http://localhost:{_port}/_arc/ws"
             region_name = os.environ.get("AWS_REGION", "us-west-2")
             _api = boto3.client(
                 "apigatewaymanagementapi",
