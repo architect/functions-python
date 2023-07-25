@@ -80,7 +80,7 @@ jobs:
   # Publish to PyPi
   publish:
     needs: test
-    # if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     # Mandatory for trusted publishing to PyPi
     permissions:
@@ -104,11 +104,11 @@ jobs:
         run: python -m build --sdist --wheel --outdir dist/ .
 
       - name: Publish package distributions to Test PyPI
-        # if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
 
-      # - name: Publish package distributions to PyPI
-      #   if: startsWith(github.ref, 'refs/tags')
-      #   uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish package distributions to PyPI
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
