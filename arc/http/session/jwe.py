@@ -1,10 +1,10 @@
+import json
 import math
 import os
 import time
 from typing import Any, Dict
 
-from jwcrypto import jwe, jwk
-from jwcrypto.common import base64url_encode, json_decode, json_encode
+from jose import jwe
 
 _algos = {
     # 256 bit (32 octet) key size
@@ -34,23 +34,18 @@ def _setup_crypto():
     if len(secret) > len(_algos[_enc]):
         secret = secret[0 : len(_algos[_enc])]
 
-    _key = jwk.JWK(k=base64url_encode(secret), kty="oct")
+    _key = secret
 
 
 def jwe_read(cookie: str) -> Dict[Any, Any]:
     _setup_crypto()
-    jwetoken = jwe.JWE()
-    jwetoken.deserialize(cookie, key=_key)
-    return json_decode(jwetoken.payload)
+    result = jwe.decrypt(cookie, _key)
+    return json.loads(result)
 
 
 def jwe_write(payload: Dict[Any, Any]) -> str:
     _setup_crypto()
     payload = dict(payload)
     payload["iat"] = math.floor(time.time())
-    jwetoken = jwe.JWE(
-        json_encode(payload),
-        json_encode({"alg": "dir", "enc": _enc}),
-        recipient=_key,
-    )
-    return jwetoken.serialize(compact=True)
+    jwetoken = jwe.encrypt(json.dumps(payload), _key, algorithm="dir", encryption=_enc)
+    return jwetoken.decode("utf-8")

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import jwcrypto
+import jose
 import pytest
 import arc
 from arc.http.session.jwe import jwe_write, jwe_read
@@ -43,13 +43,13 @@ def test_long_key(monkeypatch):
 def test_short_key(monkeypatch):
     monkeypatch.setenv("ARC_APP_SECRET", "123456")
     with pytest.raises(
-        jwcrypto.common.InvalidCEKeyLength,
-        match=r"Expected key of length 256 bits, got 48",
+        jose.exceptions.JWKError,
+        match=r"Key must be 256 bit for alg A256GCM",
     ):
         test_jwe_session(monkeypatch)
     with pytest.raises(
-        jwcrypto.common.InvalidCEKeyLength,
-        match=r"Expected key of length 256 bits, got 48",
+        jose.exceptions.JWKError,
+        match=r"Key must be 256 bit for alg A256GCM",
     ):
         test_jwe_read_write()
 

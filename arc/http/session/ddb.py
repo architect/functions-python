@@ -1,9 +1,10 @@
+import hmac
+import hashlib
 import os
 import simplejson as _json
 from datetime import datetime, timedelta
 from base64 import b64encode, urlsafe_b64encode
 from typing import Any, Dict, Tuple, Optional
-from cryptography.hazmat.primitives import hashes, hmac
 from arc.tables import table
 
 
@@ -12,9 +13,10 @@ def _get_secret() -> str:
 
 
 def _sign(value: str, secret: str) -> str:
-    h = hmac.HMAC(secret.encode("utf-8"), hashes.SHA256())
-    h.update(value.encode("utf-8"))
-    digest = b64encode(h.finalize()).decode("utf-8").rstrip("=")
+    key = str.encode(secret)
+    msg = str.encode(value)
+    h = hmac.new(key, msg=msg, digestmod=hashlib.sha256)
+    digest = b64encode(h.digest()).decode("utf-8").rstrip("=")
     return value + "." + digest
 
 

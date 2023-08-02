@@ -12,5 +12,5 @@ build = "*"
 black = "*"
 
 [packages]
-jwcrypto = "*"
+python-jose = "*"
 simplejson = "*"
