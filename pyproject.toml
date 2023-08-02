@@ -4,6 +4,10 @@ dynamic = ["version"]
 description = "Runtime utility library for Functional Web Apps (FWAs) built with Architect (https://arc.codes)"
 readme = "readme.md"
 requires-python = ">=3.7"
+dependencies = [
+    "python-jose",
+    "simplejson",
+]
 classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
