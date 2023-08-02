@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import urllib.parse
 import jose
 import pytest
 import arc
@@ -72,6 +73,18 @@ def test_ddb_session(monkeypatch, arc_services, ddb_client):
     mock = {
         "headers": {
             "cookie": cookie,
+        }
+    }
+    session = arc.http.session_read(mock)
+    assert "count" in session
+    assert session["count"] == 0
+
+    # Ensure URI encoding (inbound from API Gateway) doesn't break cookie validation
+    idx = cookie.split(";")[0][6:]  # Strip `_idx=`
+    encoded_cookie = "_idx=" + urllib.parse.quote(idx)
+    mock = {
+        "headers": {
+            "cookie": encoded_cookie,
         },
     }
     session = arc.http.session_read(mock)

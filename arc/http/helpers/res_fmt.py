@@ -2,7 +2,7 @@ import gzip
 from base64 import b64encode
 import simplejson as _json
 
-from arc.http.session import session_write
+from arc.http.session import session_read, session_write
 from .binary_types import binary_types
 
 
@@ -223,6 +223,12 @@ def res(req, params):
 
     # Save the passed session
     if params.get("session"):
-        res["headers"]["set-cookie"] = session_write(params["session"])
+        sesh = params["session"]
+        if not sesh.get("_idx"):
+            session = session_read(req)
+            session.update(params["session"])
+            sesh = session
+
+        res["headers"]["set-cookie"] = session_write(sesh)
 
     return res

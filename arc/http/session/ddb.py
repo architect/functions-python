@@ -1,6 +1,7 @@
 import hmac
 import hashlib
 import os
+import urllib.parse
 import simplejson as _json
 from datetime import datetime, timedelta
 from base64 import b64encode, urlsafe_b64encode
@@ -39,13 +40,15 @@ def ddb_read(cookie: Optional[str], table_name: str) -> Dict[Any, Any]:
     db = table(table_name)
 
     if cookie is not None:
+        if "%" in cookie:
+            cookie = urllib.parse.unquote(cookie)
         secret = _get_secret()
         cookie, valid = _unsign(cookie, secret)
         if not valid:
             cookie = None
 
-    # create a new session
-    if cookie is None:
+    # Create a new session
+    def create():
         session = {
             "_idx": _uid_safe(18),
             "_secret": _uid_safe(18),
@@ -54,8 +57,17 @@ def ddb_read(cookie: Optional[str], table_name: str) -> Dict[Any, Any]:
         db.put_item(Item=session)
         return session
 
+    # User has no session, so create it
+    if cookie is None:
+        return create()
+
     result = db.get_item(Key={"_idx": cookie}, ConsistentRead=True)
-    item = result.get("Item", {})
+    item = result.get("Item")
+
+    # User session not found in the database, so create it
+    if not item:
+        return create()
+
     session = _json.loads(_json.dumps(item))
     return session
 
