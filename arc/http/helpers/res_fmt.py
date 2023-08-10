@@ -1,9 +1,11 @@
 import gzip
+import os
 from base64 import b64encode
 import simplejson as _json
 
 from arc.http.session import session_read, session_write
 from .binary_types import binary_types
+from ..._lib import get_session_table
 
 
 def res(req, params):
@@ -222,13 +224,21 @@ def res(req, params):
         res["isBase64Encoded"] = True
 
     # Save the passed session
-    if params.get("session"):
-        sesh = params["session"]
-        if not sesh.get("_idx"):
-            session = session_read(req)
-            session.update(params["session"])
-            sesh = session
+    if params.get("session") is not None:
+        # In JWE any passed session payload is the new session
+        session = params["session"]
+        if get_session_table() != "jwe":
+            # In Dynamo, we have to figure out which session we're using
+            read = session_read(req)
+            # Set up session object prioritizing passed session payload over db
+            meta = {
+                "_idx": session.get("_idx", read.get("_idx")),
+                "_secret": session.get("_secret", read.get("_secret")),
+                "_ttl": session.get("_ttl", read.get("_ttl")),
+            }
+            # Then merge passed session payload data
+            session.update(meta)
 
-        res["headers"]["set-cookie"] = session_write(sesh)
+        res["headers"]["set-cookie"] = session_write(session)
 
     return res

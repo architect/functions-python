@@ -18,6 +18,7 @@ def test_jwe_read_write():
 
 def test_jwe_session(monkeypatch):
     monkeypatch.setenv("ARC_SESSION_TABLE_NAME", "jwe")
+    # Write a session
     cookie = arc.http.session_write({"count": 0})
     mock = {
         "headers": {
@@ -27,6 +28,15 @@ def test_jwe_session(monkeypatch):
     session = arc.http.session_read(mock)
     assert "count" in session
     assert session["count"] == 0
+    # Destroy a session
+    cookie = arc.http.session_write({})
+    mock = {
+        "headers": {
+            "cookie": cookie,
+        },
+    }
+    session = arc.http.session_read(mock)
+    assert "count" not in session
 
 
 def test_custom_key(monkeypatch):
@@ -68,6 +78,8 @@ def test_ddb_session(monkeypatch, arc_services, ddb_client):
     )
     tables = ddb_client.list_tables()
     arc_services(params={f"tables/{tablename}": tables["TableNames"][0]})
+
+    # Write a session
     payload = {"_idx": "abc", "count": 0}
     cookie = arc.http.session_write(payload)
     mock = {
@@ -90,6 +102,16 @@ def test_ddb_session(monkeypatch, arc_services, ddb_client):
     session = arc.http.session_read(mock)
     assert "count" in session
     assert session["count"] == 0
+
+    # Destroy a session
+    cookie = arc.http.session_write({"_idx": "abc"})
+    mock = {
+        "headers": {
+            "cookie": cookie,
+        }
+    }
+    session = arc.http.session_read(mock)
+    assert "count" not in session
 
 
 def test_ddb_sign_unsign():

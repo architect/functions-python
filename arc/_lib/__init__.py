@@ -50,3 +50,9 @@ def use_aws():
 
     # Assumed to be AWS
     return True
+
+
+def get_session_table():
+    return os.environ.get(
+        "ARC_SESSION_TABLE_NAME", os.environ.get("SESSION_TABLE_NAME")
+    )

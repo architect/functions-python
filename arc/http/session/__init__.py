@@ -3,6 +3,7 @@ from arc.services import _services
 from .cookies import _write_cookie, _read_cookie
 from .jwe import jwe_read, jwe_write
 from .ddb import ddb_read, ddb_write
+from ..._lib import get_session_table
 
 _session_table_cache = None
 
@@ -14,9 +15,7 @@ def _get_session_table():
     if _session_table_cache and not testing:
         return _session_table_cache
 
-    table_name = os.environ.get(
-        "ARC_SESSION_TABLE_NAME", os.environ.get("SESSION_TABLE_NAME")
-    )
+    table_name = get_session_table()
     if not table_name:
         raise TypeError(
             "To use sessions, ensure the session table name is specified in your ARC_SESSION_TABLE_NAME env var"
@@ -37,13 +36,9 @@ def _get_session_table():
 
 
 def session_read(req):
-    is_jwe = (
-        os.environ.get("ARC_SESSION_TABLE_NAME", os.environ.get("SESSION_TABLE_NAME"))
-        == "jwe"
-    )
     try:
         cookie = _read_cookie(req)
-        if is_jwe:
+        if get_session_table() == "jwe":
             return jwe_read(cookie)
         else:
             _get_session_table()
@@ -53,11 +48,7 @@ def session_read(req):
 
 
 def session_write(payload):
-    is_jwe = (
-        os.environ.get("ARC_SESSION_TABLE_NAME", os.environ.get("SESSION_TABLE_NAME"))
-        == "jwe"
-    )
-    if is_jwe:
+    if get_session_table() == "jwe":
         cookie = jwe_write(payload)
     else:
         _get_session_table()
