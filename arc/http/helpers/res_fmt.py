@@ -179,6 +179,8 @@ def res(req, params):
     if params.get("location"):
         res["statusCode"] = provided_status or 302
         res["headers"]["location"] = params["location"]
+    if params.get("cookie"):
+        res["headers"]["set-cookie"] = params["cookie"]
 
     # Handle body encoding (if necessary)
     content_type = headers.get("content-type", "").split(";")[0]
