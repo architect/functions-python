@@ -5,27 +5,26 @@
 
 ## [`architect-functions`](https://pypi.org/project/architect-functions/)
 
-> Runtime helper library for serverless apps built with [Architect](https://arc.codes)
+> Runtime utility package for [Functional Web Apps (FWAs)](https://fwa.dev/) built with [Architect][https://arc.codes]
 
 [![GitHub CI status](https://github.com/architect/functions-python/actions/workflows/build.yml/badge.svg)](https://github.com/architect/functions-python/actions/workflows/build.yml)
 
-
-Check out the full docs: [arc.codes](https://arc.codes/docs/en/reference/runtime-helpers/python)
+Check out the full docs for [this library](https://arc.codes/docs/en/reference/runtime-helpers/python) and [Architect](https://arc.codes)
 
 
 ## Install
 
 ```bash
-cd path/to/lambda
-pip install --target ./vendor architect-functions
+pip install architect-functions -r requirements.txt
 ```
+
 
 ## Usage
 
 ```py
-import arc          # Import all tools, or...
+import arc          # Import all tools, or
 import arc.events   # @events pub/sub
-import arc.http     # @http tools
+import arc.http     # @http tools + sessions
 import arc.queues   # @queues pub/sub
 import arc.services # Architect resource / service discovery
 import arc.tables   # @tables DynamoDB helper methods + API client
@@ -35,32 +34,32 @@ import arc.ws       # @ws WebSocket helper + API client
 
 ## API
 
-**`@events` methods**
-- [`arc.events.parse()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.events.parse)
-- [`arc.events.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.events.publish)
+[**`@events` methods**](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.events)
+- [`arc.events.parse()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.events.parse())
+- [`arc.events.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.events.publish())
 
-**`@http` methods**
-- [`arc.http.parse_body()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.parse_body)
-- [`arc.http.res()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.res)
-- [`arc.http.session_read()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.session_read)
-- [`arc.http.session_write()`](https://arc.codes/docs/en/reference/runtime-helpersarc.http.session_write/python#)
+[**`@http` methods**](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http)
+- [`arc.http.parse_body()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.parse_body())
+- [`arc.http.res()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.res())
+- [`arc.http.session_read()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.session_read())
+- [`arc.http.session_write()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.http.session_write())
 
-**`@queues` methods**
-- [`arc.queues.parse()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.queues.parse)
-- [`arc.queues.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.queues.publish)
+[**`@queues` methods**](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.queues)
+- [`arc.queues.parse()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.queues.parse())
+- [`arc.queues.publish()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.queues.publish())
 
-**Service discovery**
-- [`arc.services()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.services)
+[**Service discovery**](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.services())
+- [`arc.services()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.services())
 
-**`@tables` methods**
-- [`arc.tables.name()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.tables.name)
-- [`arc.tables.table()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.tables.table)
+[**`@tables` methods**](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.tables)
+- [`arc.tables.name()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.tables.name())
+- [`arc.tables.table()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.tables.table())
 
-**`@ws` methods**
-- [`arc.ws.api()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.api)
-- [`arc.ws.close()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.close)
-- [`arc.ws.info()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.info)
-- [`arc.ws.send()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.send)
+[**`@ws` methods**](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws)
+- [`arc.ws.api()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.api())
+- [`arc.ws.close()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.close())
+- [`arc.ws.info()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.info())
+- [`arc.ws.send()`](https://arc.codes/docs/en/reference/runtime-helpers/python#arc.ws.send())
 
 ---
 
@@ -78,15 +77,4 @@ pipenv install --dev
 
 ```bash
 pipenv run pytest
-```
-
-
-### Releasing
-
-```bash
-pipenv run python -m pep517.build --source --binary --out-dir dist/ .
-```
-
-```bash
-twine upload dist/*
 ```
