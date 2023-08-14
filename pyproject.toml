@@ -21,8 +21,8 @@ classifiers = [
 [project.urls]
 homepage = "https://arc.codes"
 documentation = "https://arc.codes/docs/en/reference/runtime-helpers/python"
-repository = "https://github.com/architect/functions-python/"
-changelog = "https://github.com/architect/functions-python/blob/main/readme.md"
+repository = "https://github.com/architect/functions-python"
+changelog = "https://github.com/architect/functions-python/blob/main/changelog.md"
 
 [build-system]
 requires = ["setuptools>=68", "wheel", "setuptools_scm[toml]>=7.0"]

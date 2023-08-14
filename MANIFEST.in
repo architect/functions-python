@@ -1,0 +1,5 @@
+exclude .git**
+exclude .github/**
+exclude conftest.py
+exclude scripts/**
+exclude tests/**
