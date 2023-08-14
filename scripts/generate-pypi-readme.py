@@ -6,7 +6,7 @@ readme = raw.readlines()
 
 img_tag = '<img alt="Architect Logo" src="https://github.com/architect/assets.arc.codes/raw/main/public/architect-logo-500b%402x.png">'
 readme.insert(0, img_tag)
-del readme[1:4]
+del readme[1:5]
 
 new_readme = open("./readme_pypi.md", "w", encoding="utf-8")
 new_readme.write("".join(readme))
