@@ -100,6 +100,9 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: Generate PyPI readme
+        run: python ./scripts/generate-pypi-readme.py
+
       - name: Install pypa/build
         run: python -m pip install -U build
 

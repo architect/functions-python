@@ -1,5 +1,7 @@
+exclude .coverage
 exclude .git**
 exclude .github/**
+exclude .pytest_cache/
 exclude conftest.py
 exclude scripts/**
 exclude tests/**

@@ -2,7 +2,7 @@
 name = "architect-functions"
 dynamic = ["version"]
 description = "Runtime utility library for Functional Web Apps (FWAs) built with Architect (https://arc.codes)"
-readme = "readme.md"
+readme = "readme_pypi.md"
 requires-python = ">=3.7"
 dependencies = [
     "python-jose",
