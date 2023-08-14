@@ -14,9 +14,13 @@ Check out the full docs for [this library](https://arc.codes/docs/en/reference/r
 
 ## Install
 
+Within your Architect project directory, add `architect-functions` to its root `requirements.txt`:
+
 ```bash
 pip install architect-functions -r requirements.txt
 ```
+
+> You may also add `architect-functions` to individual Lambda `requirements.txt` files, but we suggest making use of Architect's automated Lambda treeshaking. See the [Architect dependency management guide](https://staging.arc.codes/docs/en/guides/developer-experience/dependency-management#python) for more details.
 
 
 ## Usage
