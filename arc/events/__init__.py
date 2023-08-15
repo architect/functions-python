@@ -25,7 +25,7 @@ def publish(name, payload):
         try:
             dump = json.dumps({"name": name, "payload": payload})
             data = bytes(dump.encode())
-            handler = urllib.request.urlopen(f"http://localhost:{port}/events", data)
+            handler = urllib.request.urlopen(f"http://localhost:{_port}/events", data)
             return handler.read().decode("utf-8")
         except Exception as error:
             print("arc.events.publish to Sandbox failed: " + str(error))
