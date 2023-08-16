@@ -25,7 +25,9 @@ def test_parse():
 
 def test_queue_publish(arc_services, sqs_client):
     queue_name = "continuum"
-    sqs_client.create_queue(QueueName=queue_name)
+    sqs_client.create_queue(
+        QueueName=queue_name + ".fifo", Attributes={"FifoQueue": "true"}
+    )
     queues = sqs_client.list_queues()
 
     arc_services(params={f"queues/{queue_name}": queues["QueueUrls"][0]})

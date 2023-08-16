@@ -1,5 +1,7 @@
 import json
+import os
 import urllib.request
+import uuid
 import boto3
 from arc.services import _services
 from arc._lib import use_aws, get_ports
@@ -37,8 +39,13 @@ def publish(name, payload):
             _sqs_client_cache = boto3.client("sqs")
 
         def pub(arn):
+            stack = os.environ.get("ARC_STACK_NAME")
             return _sqs_client_cache.send_message(
-                QueueUrl=arn, MessageBody=json.dumps(payload), DelaySeconds=0
+                QueueUrl=arn,
+                MessageBody=json.dumps(payload),
+                DelaySeconds=0,
+                MessageGroupId=stack,
+                MessageDeduplicationId=str(uuid.uuid4()),
             )
 
         if _queues_cache.get(name):
