@@ -5,7 +5,7 @@
 
 ## [`architect-functions`](https://pypi.org/project/architect-functions/)
 
-> Runtime utility package for [Functional Web Apps (FWAs)](https://fwa.dev/) built with [Architect][https://arc.codes]
+> Runtime utility package for [Functional Web Apps (FWAs)](https://fwa.dev/) built with [Architect](https://arc.codes)
 
 [![GitHub CI status](https://github.com/architect/functions-python/actions/workflows/build.yml/badge.svg)](https://github.com/architect/functions-python/actions/workflows/build.yml)
 
