@@ -12,5 +12,6 @@ build = "*"
 black = "*"
 
 [packages]
+boto3 = "*"
 python-jose = "*"
 simplejson = "*"

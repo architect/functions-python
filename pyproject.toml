@@ -5,6 +5,7 @@ description = "Runtime utility library for Functional Web Apps (FWAs) built with
 readme = "readme_pypi.md"
 requires-python = ">=3.7"
 dependencies = [
+    "boto3",
     "cryptography",
     "python-jose",
     "simplejson",
